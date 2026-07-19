@@ -3,18 +3,21 @@
 // can't just `fetch()` these source pages directly) and word-searches the
 // fetched text for an RSS4 price, returning a small JSON object.
 //
-// STATUS: verified against real output from thecanarapost.com (see below).
-// kisandeals.com returns HTTP 403 to server-side requests (likely bot
-// protection) — kept in the list as a first attempt in case that changes,
-// but thecanarapost.com is the one actually working right now.
+// STATUS: two sources tried and ruled out, tried live against real pages:
+// - kisandeals.com returns HTTP 403 to server-side requests (bot
+//   protection) — left in as a first attempt in case that ever changes.
+// - thecanarapost.com's RSS4 mention is the *international* (Bangkok)
+//   price; the actual Kottayam domestic figure isn't present as text
+//   anywhere on the page (confirmed by dumping the full page text after
+//   the "Kottayam" mention — nothing but nav/footer/newsletter content),
+//   so it's almost certainly shown there as an image, not scrapable.
 //
-// thecanarapost.com lists an "International Market (Bangkok)" RSS4 price
-// BEFORE the real Kottayam domestic price table, so a plain "find RSS4"
-// search grabs the wrong number (confirmed: it returned 28200, the Bangkok
-// figure, not a ₹/kg value at all). Fix: only search the text after the
-// LAST occurrence of "Kottayam", which lands after the "Category Kottayam"
-// table heading and finds the real domestic RSS4 figure.
+// rubberboard.gov.in/public added as a third attempt — the official
+// government source, so if it publishes prices as text at all this
+// should be the most trustworthy one. Not yet verified against real
+// output (same network restriction as the others).
 const SOURCES = [
+  "https://rubberboard.gov.in/public",
   "https://kisandeals.com/mandiprices/RUBBER/KERALA/ALL",
   "https://thecanarapost.com/todays-rubber-prices-kottayam-and-international-market/",
 ];
