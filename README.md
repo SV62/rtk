@@ -2,7 +2,7 @@
 
 A free, no-login tool for Kerala's rubber tappers and estate owners.
 
-**Live site:** [sv62.github.io/rtk](https://sv62.github.io/rtk/) (once GitHub Pages is enabled — see below)
+**Live site:** [vettunundo.com](https://vettunundo.com/) &nbsp;·&nbsp; [sv62.github.io/rtk](https://sv62.github.io/rtk/)
 
 ## What's here
 
