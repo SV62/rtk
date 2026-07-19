@@ -18,6 +18,7 @@
 // output (same network restriction as the others).
 const SOURCES = [
   "https://rubberboard.gov.in/public",
+  "https://www.commoditymarketlive.com/rubber-price",
   "https://kisandeals.com/mandiprices/RUBBER/KERALA/ALL",
   "https://thecanarapost.com/todays-rubber-prices-kottayam-and-international-market/",
 ];
