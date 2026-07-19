@@ -328,6 +328,7 @@
         </div>
         <button class="primary" type="submit" data-i18n="calc.calc">Calculate</button>
       </form>
+      <p id="calcPriceNote" class="hidden" style="margin-top:8px;font-size:0.8rem;color:var(--muted);" data-i18n="calc.noLiveGrade">No live price for this grade yet — enter it manually.</p>
       <div id="calcResult"></div>
     </div>
 
@@ -476,6 +477,11 @@
       "calc.up":"Today's price is about {pct}% above your recent average — if you can afford to wait, some tappers hold a little longer in this situation.",
       "calc.down":"Today's price is about {pct}% below your recent average.",
       "calc.flat":"Today's price is close to your recent average — no strong signal either way.",
+      "calc.noLiveGrade":"No live price for this grade yet — enter it manually.",
+      "calc.liveUp":"Live Kottayam price is up {pct}% today (₹{prev} → ₹{today}/kg) — with prices trending up, some tappers hold a little longer if they can afford to.",
+      "calc.liveDown":"Live Kottayam price is down {pct}% today (₹{prev} → ₹{today}/kg) — with prices trending down, some tappers prefer to sell rather than wait.",
+      "calc.liveFlat":"Live Kottayam price is steady today at ₹{today}/kg — no strong trend either way.",
+      "calc.disclaimerLive":"Based on today's live Kottayam market movement — not financial advice or a guaranteed forecast.",
       "calc.disclaimer":"This is only a reflection of your own recently logged prices, not market advice or a forecast.",
       "tips.title":"Good practice tips",
       "tips.lead":"General guidance — always follow your estate/Rubber Board extension officer's advice for your specific trees and soil.",
@@ -539,6 +545,11 @@
       "calc.up":"ഇന്നത്തെ വില നിങ്ങളുടെ സമീപകാല ശരാശരിയേക്കാൾ ഏകദേശം {pct}% കൂടുതലാണ് — സാമ്പത്തിക സാഹചര്യം അനുവദിക്കുന്നെങ്കിൽ കുറച്ചു കൂടി കാത്തിരിക്കുന്നത് പലരും പരിഗണിക്കാറുണ്ട്.",
       "calc.down":"ഇന്നത്തെ വില നിങ്ങളുടെ സമീപകാല ശരാശരിയേക്കാൾ ഏകദേശം {pct}% കുറവാണ്.",
       "calc.flat":"ഇന്നത്തെ വില നിങ്ങളുടെ സമീപകാല ശരാശരിയോട് ഏകദേശം അടുത്താണ് — വ്യക്തമായ സൂചനയില്ല.",
+      "calc.noLiveGrade":"ഈ ഗ്രേഡിന് തത്സമയ വില ഇപ്പോൾ ലഭ്യമല്ല — സ്വയം നൽകുക.",
+      "calc.liveUp":"ഇന്ന് കോട്ടയം തത്സമയ വില {pct}% ഉയർന്നു (₹{prev} → ₹{today}/കിലോ) — വില ഉയരുന്ന പ്രവണതയിൽ ആയതിനാൽ ചിലർ കഴിയുമെങ്കിൽ കുറച്ചു കൂടി കാത്തിരിക്കാറുണ്ട്.",
+      "calc.liveDown":"ഇന്ന് കോട്ടയം തത്സമയ വില {pct}% താഴ്ന്നു (₹{prev} → ₹{today}/കിലോ) — വില താഴുന്ന പ്രവണതയിൽ ആയതിനാൽ ചിലർ കാത്തിരിക്കാതെ വിൽക്കാൻ താൽപ്പര്യപ്പെടാറുണ്ട്.",
+      "calc.liveFlat":"ഇന്ന് കോട്ടയം തത്സമയ വില ₹{today}/കിലോ ആയി സ്ഥിരതയോടെ തുടരുന്നു — വ്യക്തമായ പ്രവണതയില്ല.",
+      "calc.disclaimerLive":"ഇന്നത്തെ കോട്ടയം തത്സമയ വിപണി ചലനത്തെ അടിസ്ഥാനമാക്കിയത് — സാമ്പത്തിക ഉപദേശമോ ഉറപ്പായ പ്രവചനമോ അല്ല.",
       "calc.disclaimer":"ഇത് നിങ്ങൾ സ്വയം രേഖപ്പെടുത്തിയ വിലകളുടെ ഒരു പ്രതിഫലനം മാത്രമാണ് — വിപണി ഉപദേശമോ പ്രവചനമോ അല്ല.",
       "tips.title":"നല്ല രീതികൾ",
       "tips.lead":"പൊതു നിർദ്ദേശങ്ങൾ മാത്രം — നിങ്ങളുടെ എസ്റ്റേറ്റ്/റബ്ബർ ബോർഡ് ഉദ്യോഗസ്ഥന്റെ നിർദ്ദേശം എപ്പോഴും പിന്തുടരുക.",
@@ -928,6 +939,7 @@
       if (typeof data.price === "number"){
         livePrice = data;
         renderTodayPrice();
+        updateCalcPriceForGrade();
       }
     } catch(e){
       // silent — falls back to the self-logged price already on screen
@@ -1034,24 +1046,59 @@
   });
 
   // ---------- Price calculator ----------
+  // Prefers the live Kottayam day-over-day trend (real market movement)
+  // when the worker returned one; falls back to the user's own logged
+  // price history otherwise.
   function computeHoldSellSignal(){
-    var list = loadPrices().slice().sort(function(a,b){ return b.date.localeCompare(a.date); });
     var lang = document.body.getAttribute("data-lang");
     var dict = STR[lang] || STR.en;
+
+    if (livePrice && livePrice.trend){
+      var tr = livePrice.trend;
+      var pct = tr.changePct;
+      var vars = {"{pct}": Math.abs(pct).toFixed(2), "{prev}": Number(tr.previousPrice).toFixed(2), "{today}": Number(livePrice.price).toFixed(2)};
+      function fill(s){ return s.replace(/\{pct\}|\{prev\}|\{today\}/g, function(m){ return vars[m]; }); }
+      if (pct >= 1){
+        return { text: fill(dict["calc.liveUp"]), level: "good", source: "live" };
+      } else if (pct <= -1){
+        return { text: fill(dict["calc.liveDown"]), level: "bad", source: "live" };
+      }
+      return { text: fill(dict["calc.liveFlat"]), level: "warn", source: "live" };
+    }
+
+    var list = loadPrices().slice().sort(function(a,b){ return b.date.localeCompare(a.date); });
     if (list.length < 3){
-      return { text: dict["calc.needMore"], level: "warn" };
+      return { text: dict["calc.needMore"], level: "warn", source: "self" };
     }
     var last14 = list.slice(0, 14);
     var avg = last14.reduce(function(a,e){return a+Number(e.price);},0) / last14.length;
     var latest = Number(list[0].price);
     var diffPct = ((latest - avg) / avg) * 100;
     if (diffPct >= 2){
-      return { text: dict["calc.up"].replace("{pct}", diffPct.toFixed(1)), level: "good" };
+      return { text: dict["calc.up"].replace("{pct}", diffPct.toFixed(1)), level: "good", source: "self" };
     } else if (diffPct <= -2){
-      return { text: dict["calc.down"].replace("{pct}", Math.abs(diffPct).toFixed(1)), level: "bad" };
+      return { text: dict["calc.down"].replace("{pct}", Math.abs(diffPct).toFixed(1)), level: "bad", source: "self" };
     }
-    return { text: dict["calc.flat"], level: "warn" };
+    return { text: dict["calc.flat"], level: "warn", source: "self" };
   }
+
+  // Auto-fills the price field with the live price when RSS Sheet is
+  // selected (the only grade we have a verified live source for) - lump
+  // and field latex are left for manual entry since there's no verified
+  // conversion between grades.
+  function updateCalcPriceForGrade(){
+    var grade = document.getElementById("calcGrade").value;
+    var noteEl = document.getElementById("calcPriceNote");
+    if (grade === "sheet" && livePrice && typeof livePrice.price === "number"){
+      document.getElementById("calcPrice").value = livePrice.price.toFixed(2);
+      noteEl.classList.add("hidden");
+    } else if (grade !== "sheet"){
+      noteEl.classList.remove("hidden");
+    } else {
+      noteEl.classList.add("hidden");
+    }
+  }
+  document.getElementById("calcGrade").addEventListener("change", updateCalcPriceForGrade);
 
   document.getElementById("calcForm").addEventListener("submit", function(e){
     e.preventDefault();
@@ -1067,10 +1114,11 @@
     var total = qty * price;
     var signal = computeHoldSellSignal();
     var icon = signal.level === "good" ? "📈" : (signal.level === "bad" ? "📉" : "➖");
+    var disclaimer = signal.source === "live" ? dict["calc.disclaimerLive"] : dict["calc.disclaimer"];
     resultEl.innerHTML =
       '<div class="stats-grid"><div class="stat"><div class="val">₹' + total.toFixed(2) + '</div><div class="lbl">' + dict["calc.total"] + '</div></div></div>' +
       '<div class="verdict ' + signal.level + '" style="margin-top:12px;"><div class="icon">' + icon + '</div><div><p style="margin:0;">' + signal.text + '</p></div></div>' +
-      '<p style="margin-top:10px;font-size:0.78rem;color:var(--muted);">' + dict["calc.disclaimer"] + '</p>';
+      '<p style="margin-top:10px;font-size:0.78rem;color:var(--muted);">' + disclaimer + '</p>';
   });
 
   // ---------- Earnings estimator ----------
