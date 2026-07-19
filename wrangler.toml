@@ -1,0 +1,3 @@
+name = "rtk"
+main = "worker/price-worker.js"
+compatibility_date = "2026-07-19"
