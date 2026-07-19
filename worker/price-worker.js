@@ -1,27 +1,34 @@
-// Cloudflare Worker: fetches a Kerala rubber price bulletin page server-side
+// Cloudflare Worker: fetches Kerala rubber price pages server-side
 // (bypassing the browser's CORS restriction, which is why the frontend
-// can't just `fetch()` the bulletin page directly) and returns a small
-// JSON price object.
+// can't just `fetch()` these source pages directly) and word-searches the
+// fetched text for an RSS4 price, returning a small JSON object.
 //
-// STATUS: scaffold only, not deployed, not wired into index.html yet.
-// SOURCE_URL below is a placeholder. It could not be filled in with a
-// verified value because the environment this was written in has no
-// network access to any candidate source (Rubber Board, market bulletins,
-// etc.) to inspect their real markup. Shipping a guessed URL/regex would
-// most likely just silently fail forever, so this needs a human step
-// first — see worker/README.md for exactly what's needed and how to wire
-// it up once you have it.
+// STATUS: best-effort, NOT YET VERIFIED against either live page. The
+// environment this was written in has no network access to any external
+// site (confirmed via repeated blocked requests to both URLs below), so
+// PRICE_PATTERN has never actually been run against real page text from
+// either source.
+//
+// Tries SOURCES in order and returns the first one that yields a
+// sane-looking price. If a source fails, its JSON response includes
+// debugging context (the text around a near-miss, or a stripped excerpt
+// of the page) so the failure can be diagnosed and the pattern fixed from
+// that response alone — no screenshot needed.
+const SOURCES = [
+  // Structured mandi-price listing — likely a table of market/grade/price
+  // rows, which tends to be more consistent to parse than prose.
+  "https://kisandeals.com/mandiprices/RUBBER/KERALA/ALL",
+  // Prose/news-style daily price post, as a fallback.
+  "https://thecanarapost.com/todays-rubber-prices-kottayam-and-international-market/",
+];
 
-const SOURCE_URL = "REPLACE_ME_WITH_REAL_BULLETIN_URL";
 const SANITY_MIN = 100; // ₹/kg — reject extracted numbers outside this band
 const SANITY_MAX = 300;
 
-// Looks for a grade label (RSS4 / RSS 4 / RSS-4) followed within ~40 chars
-// by a plausible ₹/kg number. Regex-based rather than CSS-selector-based
-// so it's more resilient to markup/layout changes on a page nobody has
-// actually inspected while writing this — but it still needs to be
-// checked against the real page text before it can be trusted.
-const PRICE_PATTERN = /RSS[\s-]?4[^0-9]{0,40}?(\d{2,3}(?:\.\d{1,2})?)/i;
+// Matches RSS4 / RSS-4 / RSS 4 / RSS IV (case-insensitive), then within up
+// to 80 characters, an optional currency marker and a number. Kept broad
+// on purpose since the exact wording on either page is unknown.
+const PRICE_PATTERN = /RSS[\s-]?(?:4|IV)\b[^0-9₹]{0,80}?(?:₹|Rs\.?|INR)?\s*(\d{2,6}(?:[.,]\d{1,2})?)/i;
 
 export default {
   async fetch(request) {
@@ -33,36 +40,74 @@ export default {
       return new Response(null, { headers: cors });
     }
 
-    if (SOURCE_URL.startsWith("REPLACE_ME")) {
-      return json({ error: "SOURCE_URL not configured yet — see worker/README.md" }, 501, cors);
+    const attempts = [];
+    for (const sourceUrl of SOURCES) {
+      const result = await tryExtract(sourceUrl);
+      if (result.ok) {
+        return json(result.data, 200, cors);
+      }
+      attempts.push(result.data);
     }
-
-    try {
-      const res = await fetch(SOURCE_URL, {
-        headers: { "User-Agent": "Mozilla/5.0 (compatible; RubberTapKerala/1.0)" },
-      });
-      if (!res.ok) {
-        return json({ error: "source fetch failed", status: res.status }, 502, cors);
-      }
-      const html = await res.text();
-      const match = html.match(PRICE_PATTERN);
-      if (!match) {
-        return json({ error: "price pattern not found on page — regex needs adjusting" }, 502, cors);
-      }
-      const price = parseFloat(match[1]);
-      if (isNaN(price) || price < SANITY_MIN || price > SANITY_MAX) {
-        return json({ error: "extracted value failed sanity check", raw: match[1] }, 502, cors);
-      }
-      return json(
-        { price, grade: "RSS4", unit: "INR/kg", source: SOURCE_URL, fetchedAt: new Date().toISOString() },
-        200,
-        cors
-      );
-    } catch (e) {
-      return json({ error: String(e) }, 500, cors);
-    }
+    // Every source failed — return all diagnostics together.
+    return json({ error: "no source yielded a price", attempts }, 502, cors);
   },
 };
+
+async function tryExtract(sourceUrl) {
+  try {
+    const res = await fetch(sourceUrl, {
+      headers: { "User-Agent": "Mozilla/5.0 (compatible; RubberTapKerala/1.0)" },
+    });
+    if (!res.ok) {
+      return { ok: false, data: { source: sourceUrl, error: "source fetch failed", status: res.status } };
+    }
+    const html = await res.text();
+    const text = stripHtml(html);
+
+    const match = text.match(PRICE_PATTERN);
+    if (!match) {
+      return {
+        ok: false,
+        data: { source: sourceUrl, error: "price pattern not found on page", excerpt: text.slice(0, 800) },
+      };
+    }
+
+    const rawNumber = match[1].replace(",", ".");
+    const price = parseFloat(rawNumber);
+    const matchIndex = match.index || 0;
+    const context = text.slice(Math.max(0, matchIndex - 40), matchIndex + 120);
+
+    if (isNaN(price) || price < SANITY_MIN || price > SANITY_MAX) {
+      return {
+        ok: false,
+        data: {
+          source: sourceUrl,
+          error: "extracted value failed sanity check (expected " + SANITY_MIN + "-" + SANITY_MAX + " ₹/kg)",
+          raw: match[1],
+          context,
+        },
+      };
+    }
+
+    return {
+      ok: true,
+      data: { price, grade: "RSS4", unit: "INR/kg", source: sourceUrl, fetchedAt: new Date().toISOString(), context },
+    };
+  } catch (e) {
+    return { ok: false, data: { source: sourceUrl, error: String(e) } };
+  }
+}
+
+function stripHtml(html) {
+  return html
+    .replace(/<script[\s\S]*?<\/script>/gi, " ")
+    .replace(/<style[\s\S]*?<\/style>/gi, " ")
+    .replace(/<[^>]+>/g, " ")
+    .replace(/&nbsp;/g, " ")
+    .replace(/&amp;/g, "&")
+    .replace(/\s+/g, " ")
+    .trim();
+}
 
 function json(obj, status, extraHeaders) {
   return new Response(JSON.stringify(obj), {

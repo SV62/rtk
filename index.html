@@ -214,12 +214,15 @@
           <div id="searchResults" class="hidden"></div>
         </div>
       </div>
-      <div class="row" style="margin-top:12px;">
+      <div class="row" id="presetRow" style="margin-top:12px;">
         <div class="field">
           <label for="district" data-i18n="advisory.district">Or pick a quick preset</label>
           <select id="district"></select>
         </div>
+      </div>
+      <div class="row" style="margin-top:12px;align-items:center;">
         <button class="primary" id="checkBtn" type="button" data-i18n="advisory.check">Check conditions</button>
+        <button class="ghost hidden" id="usePresetBtn" type="button" data-i18n="advisory.usePreset">Use a preset district instead</button>
       </div>
       <p id="currentLocLabel" style="margin:10px 0 0;font-size:0.85rem;color:var(--muted);"></p>
       <div id="advisoryResult"></div>
@@ -381,6 +384,7 @@
       "advisory.lead":"Search your exact town or estate — weather can differ a lot even within one district. We check rain over the last day and the early-morning tapping window (4–10 AM) using live weather data.",
       "advisory.searchLabel":"Search any place in Kerala","advisory.searchBtn":"Search",
       "advisory.district":"Or pick a quick preset","advisory.check":"Check conditions",
+      "advisory.usePreset":"Use a preset district instead",
       "advisory.temp":"Temperature","advisory.hum":"Humidity","advisory.rain24":"Rain (24h)",
       "advisory.radar":"Live rain radar","advisory.radarLead":"Watch rain move in over your area, powered by Windy.com.",
       "advisory.showing":"Showing: ","advisory.searching":"Searching…","advisory.noResults":"No matches found.","advisory.searchFailed":"Search failed. Please try again.",
@@ -425,6 +429,7 @@
       "advisory.lead":"നിങ്ങളുടെ കൃത്യമായ സ്ഥലം അല്ലെങ്കിൽ എസ്റ്റേറ്റ് തിരയുക — ഒരു ജില്ലയ്ക്കുള്ളിൽ തന്നെ കാലാവസ്ഥ വളരെ വ്യത്യാസപ്പെടാം. കഴിഞ്ഞ 24 മണിക്കൂറിലെ മഴയും പുലർച്ചെ 4–10 മണി വരെയുള്ള ടാപ്പിംഗ് സമയത്തെ കാലാവസ്ഥയും ഞങ്ങൾ പരിശോധിക്കും.",
       "advisory.searchLabel":"കേരളത്തിലെ ഏതെങ്കിലും സ്ഥലം തിരയുക","advisory.searchBtn":"തിരയുക",
       "advisory.district":"അല്ലെങ്കിൽ ഒരു ദ്രുത പ്രിസെറ്റ് തിരഞ്ഞെടുക്കുക","advisory.check":"കാലാവസ്ഥ പരിശോധിക്കുക",
+      "advisory.usePreset":"പകരം ഒരു പ്രിസെറ്റ് ജില്ല ഉപയോഗിക്കുക",
       "advisory.temp":"താപനില","advisory.hum":"ആർദ്രത","advisory.rain24":"മഴ (24 മണിക്കൂർ)",
       "advisory.radar":"തത്സമയ മഴ റഡാർ","advisory.radarLead":"നിങ്ങളുടെ പ്രദേശത്തേക്ക് മഴ നീങ്ങുന്നത് കാണുക — Windy.com മുഖേന.",
       "advisory.showing":"കാണിക്കുന്നത്: ","advisory.searching":"തിരയുന്നു…","advisory.noResults":"ഫലങ്ങളൊന്നും ലഭ്യമായില്ല.","advisory.searchFailed":"തിരയൽ പരാജയപ്പെട്ടു. വീണ്ടും ശ്രമിക്കുക.",
@@ -505,7 +510,7 @@
   });
 
   // ---------- Current location (search result or preset) ----------
-  var currentLocation = null; // {name, lat, lon}
+  var currentLocation = null; // {name, lat, lon, custom}
 
   function renderLocationLabel(){
     var labelEl = document.getElementById("currentLocLabel");
@@ -515,9 +520,25 @@
     labelEl.textContent = dict["advisory.showing"] + currentLocation.name;
   }
 
+  // A "custom" (searched) location hides the preset picker so there's only
+  // ever one location on screen — no dropdown showing one place while the
+  // page actually reports weather for another.
+  function setUIMode(mode){ // 'preset' | 'search'
+    var presetRow = document.getElementById("presetRow");
+    var usePresetBtn = document.getElementById("usePresetBtn");
+    if (mode === "search"){
+      presetRow.classList.add("hidden");
+      usePresetBtn.classList.remove("hidden");
+    } else {
+      presetRow.classList.remove("hidden");
+      usePresetBtn.classList.add("hidden");
+    }
+  }
+
   function setLocation(loc, opts){
     currentLocation = loc;
     localStorage.setItem("rubbertap_location", JSON.stringify(loc));
+    setUIMode(loc.custom ? "search" : "preset");
     renderLocationLabel();
     updateLocalLinks();
     updateWindyFrame();
@@ -529,27 +550,33 @@
   try { savedLoc = savedLocRaw ? JSON.parse(savedLocRaw) : null; } catch(e){ savedLoc = null; }
   currentLocation = (savedLoc && typeof savedLoc.lat === "number" && typeof savedLoc.lon === "number")
     ? savedLoc
-    : {name: DISTRICTS[0].en, lat: DISTRICTS[0].lat, lon: DISTRICTS[0].lon};
+    : {name: DISTRICTS[0].en, lat: DISTRICTS[0].lat, lon: DISTRICTS[0].lon, custom: false};
+  setUIMode(currentLocation.custom ? "search" : "preset");
 
   districtSelect.addEventListener("change", function(){
     var id = districtSelect.value;
     var d = DISTRICTS.filter(function(x){return x.id===id;})[0];
-    if (d) setLocation({name: d.en, lat: d.lat, lon: d.lon});
+    if (d) setLocation({name: d.en, lat: d.lat, lon: d.lon, custom: false});
+  });
+
+  document.getElementById("usePresetBtn").addEventListener("click", function(){
+    var id = districtSelect.value;
+    var d = DISTRICTS.filter(function(x){return x.id===id;})[0];
+    if (d) setLocation({name: d.en, lat: d.lat, lon: d.lon, custom: false});
   });
 
   // ---------- Place search (Open-Meteo Geocoding API — free, no key, CORS-enabled) ----------
   async function searchPlaces(query){
-    var url = "https://geocoding-api.open-meteo.com/v1/search?name=" + encodeURIComponent(query) + "&count=8&language=en&format=json";
+    var url = "https://geocoding-api.open-meteo.com/v1/search?name=" + encodeURIComponent(query) + "&count=10&language=en&format=json";
     var res = await fetch(url);
     if (!res.ok) throw new Error("geocoding request failed");
     var data = await res.json();
-    var results = (data.results || []).filter(function(r){ return r.country_code === "IN"; });
-    results.sort(function(a,b){
-      var aK = (a.admin1||"").toLowerCase().indexOf("kerala") >= 0 ? 0 : 1;
-      var bK = (b.admin1||"").toLowerCase().indexOf("kerala") >= 0 ? 0 : 1;
-      return aK - bK;
+    // Only Kerala matches — never fall back to other Indian states, since a
+    // wrong-state match (e.g. a Delhi result for a small Kerala town) is
+    // worse than an honest "no match found".
+    return (data.results || []).filter(function(r){
+      return r.country_code === "IN" && (r.admin1 || "").toLowerCase().indexOf("kerala") >= 0;
     });
-    return results;
   }
 
   async function runSearch(){
@@ -576,7 +603,7 @@
         btn.type = "button";
         btn.textContent = label;
         btn.addEventListener("click", function(){
-          setLocation({name: label, lat: r.latitude, lon: r.longitude});
+          setLocation({name: label, lat: r.latitude, lon: r.longitude, custom: true});
           resultsEl.classList.add("hidden");
           document.getElementById("placeSearch").value = "";
         });
