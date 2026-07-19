@@ -162,6 +162,11 @@
   a.tip{display:block;text-decoration:none;color:inherit;transition:border-color .15s,transform .15s;}
   a.tip:hover{border-color:var(--green-600);transform:translateY(-2px);}
   a.tip .arrow{float:right;color:var(--muted);font-size:0.85rem;}
+  .tip ul{margin:0;padding-left:18px;font-size:0.88rem;color:var(--muted);}
+  .tip ul li{margin-bottom:4px;}
+  .tip .readmore{display:inline-block;margin-top:10px;font-size:0.82rem;color:var(--green-700);text-decoration:none;}
+  .tip .readmore:hover{text-decoration:underline;}
+  @media (prefers-color-scheme:dark){ .tip .readmore{ color:#7bc496; } }
   footer{padding:26px 0 40px;color:var(--muted);font-size:0.82rem;border-top:1px solid var(--border);margin-top:20px;}
   footer a{color:var(--muted);text-decoration:underline;}
   .badge-note{display:inline-block;background:var(--green-100);color:var(--green-800);border-radius:999px;padding:3px 10px;font-size:0.75rem;margin-left:6px;}
@@ -214,15 +219,8 @@
           <div id="searchResults" class="hidden"></div>
         </div>
       </div>
-      <div class="row" id="presetRow" style="margin-top:12px;">
-        <div class="field">
-          <label for="district" data-i18n="advisory.district">Or pick a quick preset</label>
-          <select id="district"></select>
-        </div>
-      </div>
       <div class="row" style="margin-top:12px;align-items:center;">
         <button class="primary" id="checkBtn" type="button" data-i18n="advisory.check">Check conditions</button>
-        <button class="ghost hidden" id="usePresetBtn" type="button" data-i18n="advisory.usePreset">Use a preset district instead</button>
       </div>
       <p id="currentLocLabel" style="margin:10px 0 0;font-size:0.85rem;color:var(--muted);"></p>
       <div id="advisoryResult"></div>
@@ -331,32 +329,56 @@
       <div class="tip">
         <div class="icon">🌅</div>
         <h3 data-i18n="tip1.h">Tap early, before the bark dries</h3>
-        <p data-i18n="tip1.p">Latex flows best in cool, humid pre-dawn hours. Aim to finish tapping before direct sun hits the panel.</p>
+        <ul>
+          <li data-i18n="tip1.p1">Latex flows best in cool, humid pre-dawn hours.</li>
+          <li data-i18n="tip1.p2">Aim to finish tapping before direct sun hits the panel.</li>
+        </ul>
+        <a class="readmore" target="_blank" rel="noopener" href="https://duckduckgo.com/?q=best+time+of+day+to+tap+rubber+trees+Kerala" data-i18n="tips.readmore">🔎 Discussions &amp; articles</a>
       </div>
       <div class="tip">
         <div class="icon">🌧️</div>
         <h3 data-i18n="tip2.h">Never tap on wet bark</h3>
-        <p data-i18n="tip2.p">Tapping a rain-wet panel dilutes latex and invites bark disease. Wait until the panel is dry, even if it means tapping later.</p>
+        <ul>
+          <li data-i18n="tip2.p1">Tapping a rain-wet panel dilutes latex and invites bark disease.</li>
+          <li data-i18n="tip2.p2">Wait until the panel is dry, even if it means tapping later.</li>
+        </ul>
+        <a class="readmore" target="_blank" rel="noopener" href="https://duckduckgo.com/?q=tapping+rubber+trees+wet+bark+after+rain+forum" data-i18n="tips.readmore">🔎 Discussions &amp; articles</a>
       </div>
       <div class="tip">
         <div class="icon">🍂</div>
         <h3 data-i18n="tip3.h">Watch for monsoon disease</h3>
-        <p data-i18n="tip3.p">Heavy, sustained rain raises the risk of Abnormal Leaf Fall and Pink disease. Consider rain-guarding panels and check for early symptoms.</p>
+        <ul>
+          <li data-i18n="tip3.p1">Heavy, sustained rain raises the risk of Abnormal Leaf Fall and Pink disease.</li>
+          <li data-i18n="tip3.p2">Consider rain-guarding panels and check for early symptoms.</li>
+        </ul>
+        <a class="readmore" target="_blank" rel="noopener" href="https://duckduckgo.com/?q=abnormal+leaf+fall+pink+disease+rubber+trees+Kerala+treatment" data-i18n="tips.readmore">🔎 Discussions &amp; articles</a>
       </div>
       <div class="tip">
         <div class="icon">🔪</div>
         <h3 data-i18n="tip4.h">Keep the tapping cut shallow</h3>
-        <p data-i18n="tip4.p">Cutting too deep wounds the cambium and shortens the tree's tapping life. A consistent, shallow cut keeps panels productive for years.</p>
+        <ul>
+          <li data-i18n="tip4.p1">Cutting too deep wounds the cambium and shortens the tree's tapping life.</li>
+          <li data-i18n="tip4.p2">A consistent, shallow cut keeps panels productive for years.</li>
+        </ul>
+        <a class="readmore" target="_blank" rel="noopener" href="https://duckduckgo.com/?q=correct+rubber+tapping+cut+depth+technique+guide" data-i18n="tips.readmore">🔎 Discussions &amp; articles</a>
       </div>
       <div class="tip">
         <div class="icon">📅</div>
         <h3 data-i18n="tip5.h">Rest days matter</h3>
-        <p data-i18n="tip5.p">Standard d/2 or d/3 tapping systems give the tree recovery time. Skipping rest days for short-term yield wears trees out faster.</p>
+        <ul>
+          <li data-i18n="tip5.p1">Standard d/2 or d/3 tapping systems give the tree recovery time.</li>
+          <li data-i18n="tip5.p2">Skipping rest days for short-term yield wears trees out faster.</li>
+        </ul>
+        <a class="readmore" target="_blank" rel="noopener" href="https://duckduckgo.com/?q=rubber+tapping+d2+d3+frequency+system+guide" data-i18n="tips.readmore">🔎 Discussions &amp; articles</a>
       </div>
       <div class="tip">
         <div class="icon">🥽</div>
         <h3 data-i18n="tip6.h">Tap safely</h3>
-        <p data-i18n="tip6.p">Early-morning tapping means low light — carry a headlamp, wear closed footwear, and be mindful of snakes and slippery slopes.</p>
+        <ul>
+          <li data-i18n="tip6.p1">Carry a headlamp and wear closed footwear — early-morning tapping means low light.</li>
+          <li data-i18n="tip6.p2">Be mindful of snakes and slippery slopes.</li>
+        </ul>
+        <a class="readmore" target="_blank" rel="noopener" href="https://duckduckgo.com/?q=rubber+tapping+safety+tips+Kerala" data-i18n="tips.readmore">🔎 Discussions &amp; articles</a>
       </div>
     </div>
   </section>
@@ -383,8 +405,7 @@
       "advisory.title":"Tapping advisory",
       "advisory.lead":"Search your exact town or estate — weather can differ a lot even within one district. We check rain over the last day and the early-morning tapping window (4–10 AM) using live weather data.",
       "advisory.searchLabel":"Search any place in Kerala","advisory.searchBtn":"Search",
-      "advisory.district":"Or pick a quick preset","advisory.check":"Check conditions",
-      "advisory.usePreset":"Use a preset district instead",
+      "advisory.check":"Check conditions",
       "advisory.temp":"Temperature","advisory.hum":"Humidity","advisory.rain24":"Rain (24h)",
       "advisory.radar":"Live rain radar","advisory.radarLead":"Watch rain move in over your area, powered by Windy.com.",
       "advisory.showing":"Showing: ","advisory.searching":"Searching…","advisory.noResults":"No matches found.","advisory.searchFailed":"Search failed. Please try again.",
@@ -413,12 +434,19 @@
       "calc.disclaimer":"This is only a reflection of your own recently logged prices, not market advice or a forecast.",
       "tips.title":"Good practice tips",
       "tips.lead":"General guidance — always follow your estate/Rubber Board extension officer's advice for your specific trees and soil.",
-      "tip1.h":"Tap early, before the bark dries","tip1.p":"Latex flows best in cool, humid pre-dawn hours. Aim to finish tapping before direct sun hits the panel.",
-      "tip2.h":"Never tap on wet bark","tip2.p":"Tapping a rain-wet panel dilutes latex and invites bark disease. Wait until the panel is dry, even if it means tapping later.",
-      "tip3.h":"Watch for monsoon disease","tip3.p":"Heavy, sustained rain raises the risk of Abnormal Leaf Fall and Pink disease. Consider rain-guarding panels and check for early symptoms.",
-      "tip4.h":"Keep the tapping cut shallow","tip4.p":"Cutting too deep wounds the cambium and shortens the tree's tapping life. A consistent, shallow cut keeps panels productive for years.",
-      "tip5.h":"Rest days matter","tip5.p":"Standard d/2 or d/3 tapping systems give the tree recovery time. Skipping rest days for short-term yield wears trees out faster.",
-      "tip6.h":"Tap safely","tip6.p":"Early-morning tapping means low light — carry a headlamp, wear closed footwear, and be mindful of snakes and slippery slopes.",
+      "tips.readmore":"🔎 Discussions & articles",
+      "tip1.h":"Tap early, before the bark dries",
+      "tip1.p1":"Latex flows best in cool, humid pre-dawn hours.","tip1.p2":"Aim to finish tapping before direct sun hits the panel.",
+      "tip2.h":"Never tap on wet bark",
+      "tip2.p1":"Tapping a rain-wet panel dilutes latex and invites bark disease.","tip2.p2":"Wait until the panel is dry, even if it means tapping later.",
+      "tip3.h":"Watch for monsoon disease",
+      "tip3.p1":"Heavy, sustained rain raises the risk of Abnormal Leaf Fall and Pink disease.","tip3.p2":"Consider rain-guarding panels and check for early symptoms.",
+      "tip4.h":"Keep the tapping cut shallow",
+      "tip4.p1":"Cutting too deep wounds the cambium and shortens the tree's tapping life.","tip4.p2":"A consistent, shallow cut keeps panels productive for years.",
+      "tip5.h":"Rest days matter",
+      "tip5.p1":"Standard d/2 or d/3 tapping systems give the tree recovery time.","tip5.p2":"Skipping rest days for short-term yield wears trees out faster.",
+      "tip6.h":"Tap safely",
+      "tip6.p1":"Carry a headlamp and wear closed footwear — early-morning tapping means low light.","tip6.p2":"Be mindful of snakes and slippery slopes.",
       "footer.disclaimer":"The tapping advisory is a rule-of-thumb estimate from public weather forecasts, not a substitute for on-the-ground judgement or official Rubber Board guidance. Price entries are stored only in your browser's local storage.",
       "footer.credit":"Weather data: Open-Meteo. Radar: Windy.com. Built as an independent, free community tool — no account, no tracking."
     },
@@ -429,8 +457,7 @@
       "advisory.title":"ടാപ്പിംഗ് ഉപദേശം",
       "advisory.lead":"നിങ്ങളുടെ കൃത്യമായ സ്ഥലം അല്ലെങ്കിൽ എസ്റ്റേറ്റ് തിരയുക — ഒരു ജില്ലയ്ക്കുള്ളിൽ തന്നെ കാലാവസ്ഥ വളരെ വ്യത്യാസപ്പെടാം. കഴിഞ്ഞ 24 മണിക്കൂറിലെ മഴയും പുലർച്ചെ 4–10 മണി വരെയുള്ള ടാപ്പിംഗ് സമയത്തെ കാലാവസ്ഥയും ഞങ്ങൾ പരിശോധിക്കും.",
       "advisory.searchLabel":"കേരളത്തിലെ ഏതെങ്കിലും സ്ഥലം തിരയുക","advisory.searchBtn":"തിരയുക",
-      "advisory.district":"അല്ലെങ്കിൽ ഒരു ദ്രുത പ്രിസെറ്റ് തിരഞ്ഞെടുക്കുക","advisory.check":"കാലാവസ്ഥ പരിശോധിക്കുക",
-      "advisory.usePreset":"പകരം ഒരു പ്രിസെറ്റ് ജില്ല ഉപയോഗിക്കുക",
+      "advisory.check":"കാലാവസ്ഥ പരിശോധിക്കുക",
       "advisory.temp":"താപനില","advisory.hum":"ആർദ്രത","advisory.rain24":"മഴ (24 മണിക്കൂർ)",
       "advisory.radar":"തത്സമയ മഴ റഡാർ","advisory.radarLead":"നിങ്ങളുടെ പ്രദേശത്തേക്ക് മഴ നീങ്ങുന്നത് കാണുക — Windy.com മുഖേന.",
       "advisory.showing":"കാണിക്കുന്നത്: ","advisory.searching":"തിരയുന്നു…","advisory.noResults":"ഫലങ്ങളൊന്നും ലഭ്യമായില്ല.","advisory.searchFailed":"തിരയൽ പരാജയപ്പെട്ടു. വീണ്ടും ശ്രമിക്കുക.",
@@ -459,12 +486,19 @@
       "calc.disclaimer":"ഇത് നിങ്ങൾ സ്വയം രേഖപ്പെടുത്തിയ വിലകളുടെ ഒരു പ്രതിഫലനം മാത്രമാണ് — വിപണി ഉപദേശമോ പ്രവചനമോ അല്ല.",
       "tips.title":"നല്ല രീതികൾ",
       "tips.lead":"പൊതു നിർദ്ദേശങ്ങൾ മാത്രം — നിങ്ങളുടെ എസ്റ്റേറ്റ്/റബ്ബർ ബോർഡ് ഉദ്യോഗസ്ഥന്റെ നിർദ്ദേശം എപ്പോഴും പിന്തുടരുക.",
-      "tip1.h":"തൊലി ഉണങ്ങുന്നതിന് മുൻപ് നേരത്തെ ടാപ്പ് ചെയ്യുക","tip1.p":"തണുത്ത, ഈർപ്പമുള്ള പുലർച്ചെ സമയങ്ങളിൽ പാൽ നന്നായി ഒഴുകും. വെയിൽ പാനലിൽ വീഴുന്നതിന് മുൻപ് ടാപ്പിംഗ് പൂർത്തിയാക്കുക.",
-      "tip2.h":"നനഞ്ഞ തൊലിയിൽ ടാപ്പ് ചെയ്യരുത്","tip2.p":"മഴ നനഞ്ഞ പാനൽ ടാപ്പ് ചെയ്താൽ പാൽ നേർപ്പിക്കുകയും രോഗസാധ്യത കൂട്ടുകയും ചെയ്യും. പാനൽ ഉണങ്ങുന്നത് വരെ കാത്തിരിക്കുക.",
-      "tip3.h":"മഴക്കാല രോഗങ്ങൾ ശ്രദ്ധിക്കുക","tip3.p":"തുടർച്ചയായ കനത്ത മഴ ഇല കൊഴിച്ചിൽ, പിങ്ക് രോഗം എന്നിവയുടെ സാധ്യത കൂട്ടുന്നു. റെയിൻ ഗാർഡിംഗ് പരിഗണിക്കുക.",
-      "tip4.h":"ടാപ്പിംഗ് മുറിവ് ആഴം കുറച്ച് വയ്ക്കുക","tip4.p":"അമിതമായി ആഴത്തിൽ മുറിക്കുന്നത് മരത്തിന് ദോഷം ചെയ്യും. സ്ഥിരമായ, ആഴം കുറഞ്ഞ മുറിവ് പാനലിന്റെ ആയുസ്സ് കൂട്ടും.",
-      "tip5.h":"വിശ്രമ ദിവസങ്ങൾ പ്രധാനമാണ്","tip5.p":"d/2 അല്ലെങ്കിൽ d/3 ടാപ്പിംഗ് സമ്പ്രദായങ്ങൾ മരത്തിന് വിശ്രമം നൽകുന്നു. ഇത് ഒഴിവാക്കുന്നത് മരത്തെ വേഗം ക്ഷീണിപ്പിക്കും.",
-      "tip6.h":"സുരക്ഷിതമായി ടാപ്പ് ചെയ്യുക","tip6.p":"പുലർച്ചെ വെളിച്ചം കുറവായിരിക്കും — ഹെഡ്‌ലാമ്പ്, മുഴുവൻ കാൽ മൂടുന്ന ചെരിപ്പ് എന്നിവ ഉപയോഗിക്കുക, പാമ്പുകളെയും വഴുക്കലിനെയും ശ്രദ്ധിക്കുക.",
+      "tips.readmore":"🔎 ചർച്ചകളും ലേഖനങ്ങളും",
+      "tip1.h":"തൊലി ഉണങ്ങുന്നതിന് മുൻപ് നേരത്തെ ടാപ്പ് ചെയ്യുക",
+      "tip1.p1":"തണുത്ത, ഈർപ്പമുള്ള പുലർച്ചെ സമയങ്ങളിൽ പാൽ നന്നായി ഒഴുകും.","tip1.p2":"വെയിൽ പാനലിൽ വീഴുന്നതിന് മുൻപ് ടാപ്പിംഗ് പൂർത്തിയാക്കുക.",
+      "tip2.h":"നനഞ്ഞ തൊലിയിൽ ടാപ്പ് ചെയ്യരുത്",
+      "tip2.p1":"മഴ നനഞ്ഞ പാനൽ ടാപ്പ് ചെയ്താൽ പാൽ നേർപ്പിക്കുകയും രോഗസാധ്യത കൂട്ടുകയും ചെയ്യും.","tip2.p2":"പാനൽ ഉണങ്ങുന്നത് വരെ കാത്തിരിക്കുക.",
+      "tip3.h":"മഴക്കാല രോഗങ്ങൾ ശ്രദ്ധിക്കുക",
+      "tip3.p1":"തുടർച്ചയായ കനത്ത മഴ ഇല കൊഴിച്ചിൽ, പിങ്ക് രോഗം എന്നിവയുടെ സാധ്യത കൂട്ടുന്നു.","tip3.p2":"റെയിൻ ഗാർഡിംഗ് പരിഗണിക്കുക, നേരത്തെയുള്ള ലക്ഷണങ്ങൾ ശ്രദ്ധിക്കുക.",
+      "tip4.h":"ടാപ്പിംഗ് മുറിവ് ആഴം കുറച്ച് വയ്ക്കുക",
+      "tip4.p1":"അമിതമായി ആഴത്തിൽ മുറിക്കുന്നത് മരത്തിന് ദോഷം ചെയ്യും.","tip4.p2":"സ്ഥിരമായ, ആഴം കുറഞ്ഞ മുറിവ് പാനലിന്റെ ആയുസ്സ് കൂട്ടും.",
+      "tip5.h":"വിശ്രമ ദിവസങ്ങൾ പ്രധാനമാണ്",
+      "tip5.p1":"d/2 അല്ലെങ്കിൽ d/3 ടാപ്പിംഗ് സമ്പ്രദായങ്ങൾ മരത്തിന് വിശ്രമം നൽകുന്നു.","tip5.p2":"ഇത് ഒഴിവാക്കുന്നത് മരത്തെ വേഗം ക്ഷീണിപ്പിക്കും.",
+      "tip6.h":"സുരക്ഷിതമായി ടാപ്പ് ചെയ്യുക",
+      "tip6.p1":"ഹെഡ്‌ലാമ്പ്, മുഴുവൻ കാൽ മൂടുന്ന ചെരിപ്പ് എന്നിവ ഉപയോഗിക്കുക — പുലർച്ചെ വെളിച്ചം കുറവായിരിക്കും.","tip6.p2":"പാമ്പുകളെയും വഴുക്കലിനെയും ശ്രദ്ധിക്കുക.",
       "footer.disclaimer":"ടാപ്പിംഗ് ഉപദേശം പൊതു കാലാവസ്ഥാ പ്രവചനത്തെ അടിസ്ഥാനമാക്കിയുള്ള ഒരു ഏകദേശ കണക്കാണ് — ഇത് നേരിട്ടുള്ള നിരീക്ഷണത്തിനോ ഔദ്യോഗിക റബ്ബർ ബോർഡ് നിർദ്ദേശത്തിനോ പകരമല്ല. വില വിവരങ്ങൾ നിങ്ങളുടെ ബ്രൗസറിൽ മാത്രമേ സൂക്ഷിക്കുന്നുള്ളൂ.",
       "footer.credit":"കാലാവസ്ഥാ വിവരം: Open-Meteo. ഇത് ഒരു സ്വതന്ത്ര, സൗജന്യ കമ്മ്യൂണിറ്റി ഉപകരണമാണ് — അക്കൗണ്ട് വേണ്ട, ട്രാക്കിംഗ് ഇല്ല."
     }
@@ -489,30 +523,9 @@
     applyLang(cur === "ml" ? "en" : "ml");
   });
 
-  // ---------- Districts ----------
-  var DISTRICTS = [
-    {id:"kottayam", en:"Kottayam", ml:"കോട്ടയം", lat:9.5916, lon:76.5222},
-    {id:"ernakulam", en:"Ernakulam", ml:"എറണാകുളം", lat:9.9816, lon:76.2999},
-    {id:"pathanamthitta", en:"Pathanamthitta", ml:"പത്തനംതിട്ട", lat:9.2648, lon:76.7870},
-    {id:"kollam", en:"Kollam", ml:"കൊല്ലം", lat:8.8932, lon:76.6141},
-    {id:"idukki", en:"Idukki (Thodupuzha)", ml:"ഇടുക്കി (തൊടുപുഴ)", lat:9.8933, lon:76.7167},
-    {id:"thrissur", en:"Thrissur", ml:"തൃശ്ശൂർ", lat:10.5276, lon:76.2144},
-    {id:"kozhikode", en:"Kozhikode", ml:"കോഴിക്കോട്", lat:11.2588, lon:75.7804},
-    {id:"kannur", en:"Kannur", ml:"കണ്ണൂർ", lat:11.8745, lon:75.3704},
-    {id:"malappuram", en:"Malappuram", ml:"മലപ്പുറം", lat:11.0510, lon:76.0711},
-    {id:"kasaragod", en:"Kasaragod", ml:"കാസർഗോഡ്", lat:12.4996, lon:74.9869}
-  ];
-
-  var districtSelect = document.getElementById("district");
-  DISTRICTS.forEach(function(d){
-    var opt = document.createElement("option");
-    opt.value = d.id;
-    opt.textContent = d.en;
-    districtSelect.appendChild(opt);
-  });
-
-  // ---------- Current location (search result or preset) ----------
-  var currentLocation = null; // {name, lat, lon, custom}
+  // ---------- Current location (search result, or the default) ----------
+  var DEFAULT_LOCATION = {name:"Kottayam", lat:9.5916, lon:76.5222};
+  var currentLocation = null; // {name, lat, lon}
 
   function renderLocationLabel(){
     var labelEl = document.getElementById("currentLocLabel");
@@ -522,25 +535,9 @@
     labelEl.textContent = dict["advisory.showing"] + currentLocation.name;
   }
 
-  // A "custom" (searched) location hides the preset picker so there's only
-  // ever one location on screen — no dropdown showing one place while the
-  // page actually reports weather for another.
-  function setUIMode(mode){ // 'preset' | 'search'
-    var presetRow = document.getElementById("presetRow");
-    var usePresetBtn = document.getElementById("usePresetBtn");
-    if (mode === "search"){
-      presetRow.classList.add("hidden");
-      usePresetBtn.classList.remove("hidden");
-    } else {
-      presetRow.classList.remove("hidden");
-      usePresetBtn.classList.add("hidden");
-    }
-  }
-
   function setLocation(loc, opts){
     currentLocation = loc;
     localStorage.setItem("rubbertap_location", JSON.stringify(loc));
-    setUIMode(loc.custom ? "search" : "preset");
     renderLocationLabel();
     updateLocalLinks();
     updateWindyFrame();
@@ -552,20 +549,7 @@
   try { savedLoc = savedLocRaw ? JSON.parse(savedLocRaw) : null; } catch(e){ savedLoc = null; }
   currentLocation = (savedLoc && typeof savedLoc.lat === "number" && typeof savedLoc.lon === "number")
     ? savedLoc
-    : {name: DISTRICTS[0].en, lat: DISTRICTS[0].lat, lon: DISTRICTS[0].lon, custom: false};
-  setUIMode(currentLocation.custom ? "search" : "preset");
-
-  districtSelect.addEventListener("change", function(){
-    var id = districtSelect.value;
-    var d = DISTRICTS.filter(function(x){return x.id===id;})[0];
-    if (d) setLocation({name: d.en, lat: d.lat, lon: d.lon, custom: false});
-  });
-
-  document.getElementById("usePresetBtn").addEventListener("click", function(){
-    var id = districtSelect.value;
-    var d = DISTRICTS.filter(function(x){return x.id===id;})[0];
-    if (d) setLocation({name: d.en, lat: d.lat, lon: d.lon, custom: false});
-  });
+    : DEFAULT_LOCATION;
 
   // ---------- Place search (Open-Meteo Geocoding API — free, no key, CORS-enabled) ----------
   async function searchPlaces(query){
