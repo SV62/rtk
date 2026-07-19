@@ -6,11 +6,13 @@ A free, no-login tool for Kerala's rubber tappers and estate owners.
 
 ## What's here
 
-A single self-contained `index.html` — no build step, no dependencies, no server. Two things:
+A single self-contained `index.html` — no build step, no dependencies, no server. Main things:
 
-- **Tapping advisory** — pick a Kerala rubber-growing district and get a quick good/caution/don't-tap call for the early-morning tapping window, based on live rain forecast, recent rainfall, humidity, and current temperature from [Open-Meteo](https://open-meteo.com/) (free, no API key required).
-- **Local info, live** — one-click, district-aware DuckDuckGo search links for today's rubber price, the nearest Rubber Producer Society / Rubber Board office, and Kerala rubber market news. There's no free structured API for any of these, and DuckDuckGo's result pages can't be fetched or embedded client-side (no CORS), so instead of faking "live" data these open a real, current DuckDuckGo search in a new tab, pre-filled for the selected district.
-- **Price log** — log your daily RSS4/sheet rubber price (₹/kg) to track your own local trend. Stored only in your browser's `localStorage` — nothing is sent to a server.
+- **Tapping advisory** — search any town/estate in Kerala (not just a fixed district list — weather at Kanjirappally and Mundakayam can differ a lot even though both are in Kottayam district) via [Open-Meteo's free geocoding API](https://open-meteo.com/en/docs/geocoding-api), then get a quick good/caution/don't-tap call for the early-morning tapping window, based on live rain forecast, recent rainfall, humidity, and current temperature from [Open-Meteo](https://open-meteo.com/) (both free, no API key required). A set of 10 district presets is offered as a shortcut.
+- **Live rain radar** — an embedded [Windy.com](https://www.windy.com/) radar/forecast map for the selected location, using their official free embed widget (no API key, no account).
+- **Price log + today's price** — log your daily RSS4/sheet rubber price (₹/kg); the most recent entry is shown prominently as "Today's price" at the top of the section. Stored only in your browser's `localStorage` — nothing is sent to a server. There's no confirmed free/CORS-enabled live API for official Kerala rubber prices, so this stays self-logged rather than faking a live feed (see `worker/` for a scaffold towards a real live feed, currently blocked on getting a verified source page — see that folder's README).
+- **Price calculator** — enter a grade (RSS sheet / lump-ottupaal / field latex), quantity, and price to get the sale value, plus a simple hold/sell signal derived from your own logged price trend (not financial advice — just a reflection of your own data).
+- **Local info** — one-click, location-aware search links (opens in a new tab) for the nearest Rubber Producer Society / Rubber Board office, and Kerala rubber market news — things with no embeddable data source.
 
 Also includes a set of general good-practice tapping tips, and a full English/Malayalam language toggle.
 

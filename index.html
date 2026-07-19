@@ -167,6 +167,15 @@
   .badge-note{display:inline-block;background:var(--green-100);color:var(--green-800);border-radius:999px;padding:3px 10px;font-size:0.75rem;margin-left:6px;}
   @media (prefers-color-scheme:dark){.badge-note{color:#a9dcb9;}}
   .hidden{display:none !important;}
+  #searchResults{margin-top:8px;border:1px solid var(--border);border-radius:10px;overflow:hidden;background:var(--card);}
+  #searchResults button{display:block;width:100%;text-align:left;padding:10px 12px;border:0;border-bottom:1px solid var(--border);background:none;cursor:pointer;font-size:0.92rem;color:var(--text);}
+  #searchResults button:last-child{border-bottom:0;}
+  #searchResults button:hover{background:var(--green-100);}
+  .hero-stat{text-align:center;}
+  .hero-stat .lbl{font-size:0.78rem;color:var(--muted);text-transform:uppercase;letter-spacing:.04em;}
+  .hero-stat .big{font-size:2.1rem;font-weight:700;color:var(--green-800);margin:4px 0;}
+  @media (prefers-color-scheme:dark){.hero-stat .big{color:#a9dcb9;}}
+  .hero-stat .note{font-size:0.82rem;color:var(--muted);}
 </style>
 </head>
 <body data-lang="en">
@@ -193,29 +202,41 @@
 
   <section id="advisory">
     <h2 data-i18n="advisory.title">Tapping advisory</h2>
-    <p class="lead" data-i18n="advisory.lead">Pick your area. We check rain over the last day and the early-morning tapping window (4–10 AM) using live weather data.</p>
+    <p class="lead" data-i18n="advisory.lead">Search your exact town or estate — weather can differ a lot even within one district. We check rain over the last day and the early-morning tapping window (4–10 AM) using live weather data.</p>
     <div class="card">
       <div class="row">
+        <div class="field" style="flex:2;min-width:220px;">
+          <label for="placeSearch" data-i18n="advisory.searchLabel">Search any place in Kerala</label>
+          <div style="display:flex;gap:8px;">
+            <input type="text" id="placeSearch" placeholder="e.g. Mundakayam, Kanjirappally, Erumeli">
+            <button class="primary" id="searchBtn" type="button" data-i18n="advisory.searchBtn">Search</button>
+          </div>
+          <div id="searchResults" class="hidden"></div>
+        </div>
+      </div>
+      <div class="row" style="margin-top:12px;">
         <div class="field">
-          <label for="district" data-i18n="advisory.district">Area</label>
+          <label for="district" data-i18n="advisory.district">Or pick a quick preset</label>
           <select id="district"></select>
         </div>
         <button class="primary" id="checkBtn" type="button" data-i18n="advisory.check">Check conditions</button>
       </div>
+      <p id="currentLocLabel" style="margin:10px 0 0;font-size:0.85rem;color:var(--muted);"></p>
       <div id="advisoryResult"></div>
+    </div>
+
+    <div class="card" style="margin-top:14px;">
+      <h3 style="margin:0 0 4px;font-size:1rem;color:var(--green-800);" data-i18n="advisory.radar">Live rain radar</h3>
+      <p class="lead" style="margin-bottom:12px;" data-i18n="advisory.radarLead">Watch rain move in over your area, powered by Windy.com.</p>
+      <iframe id="windyFrame" title="Windy rain radar" loading="lazy"
+        style="width:100%;height:360px;border:0;border-radius:10px;display:block;"></iframe>
     </div>
   </section>
 
   <section id="local">
-    <h2 data-i18n="local.title">Local info, live</h2>
-    <p class="lead" data-i18n="local.lead">These open a live DuckDuckGo search in a new tab for your selected area — real, current results, no app or API key involved.</p>
+    <h2 data-i18n="local.title">Local info</h2>
+    <p class="lead" data-i18n="local.lead">These open a quick web search in a new tab for your selected area — for things we can't show directly on the page.</p>
     <div class="tips-grid">
-      <a class="tip" id="linkPrice" target="_blank" rel="noopener">
-        <span class="arrow">↗</span>
-        <div class="icon">💰</div>
-        <h3 data-i18n="local.price.h">Today's rubber price</h3>
-        <p data-i18n="local.price.p">Search the latest RSS4 / sheet rate for your area</p>
-      </a>
       <a class="tip" id="linkSociety" target="_blank" rel="noopener">
         <span class="arrow">↗</span>
         <div class="icon">🏢</div>
@@ -234,6 +255,13 @@
   <section id="prices">
     <h2 data-i18n="prices.title">Price log</h2>
     <p class="lead" data-i18n="prices.lead">Log your daily RSS4 / sheet rubber price (₹ per kg) to track your own local trend. Saved only in this browser — nothing is sent anywhere.</p>
+
+    <div class="card hero-stat" style="margin-bottom:14px;">
+      <div class="lbl" data-i18n="prices.todayLabel">Today's price</div>
+      <div class="big" id="todayPriceValue">—</div>
+      <div class="note" id="todayPriceNote"></div>
+    </div>
+
     <div class="card">
       <form id="priceForm" class="row">
         <div class="field">
@@ -265,6 +293,31 @@
         <button class="ghost" id="clearPrices" type="button" data-i18n="prices.clear">Clear all entries</button>
         <span class="badge-note" data-i18n="prices.official">Cross-check with your local Rubber Marketing Society / Rubber Board bulletin for the official rate.</span>
       </div>
+    </div>
+
+    <div class="card" style="margin-top:14px;">
+      <h3 style="margin:0 0 4px;font-size:1rem;color:var(--green-800);" data-i18n="calc.title">Price calculator</h3>
+      <p class="lead" style="margin-bottom:12px;" data-i18n="calc.lead">Work out today's sale value, and see a simple hold/sell signal based on your own logged price trend.</p>
+      <form id="calcForm" class="row">
+        <div class="field">
+          <label for="calcGrade" data-i18n="calc.grade">Grade</label>
+          <select id="calcGrade">
+            <option value="sheet" data-i18n="calc.gradeSheet">RSS Sheet</option>
+            <option value="lump" data-i18n="calc.gradeLump">Lump / Ottupaal</option>
+            <option value="latex" data-i18n="calc.gradeLatex">Field Latex</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="calcQty" data-i18n="calc.qty">Quantity (kg)</label>
+          <input type="number" id="calcQty" min="0" step="0.1" placeholder="e.g. 50">
+        </div>
+        <div class="field">
+          <label for="calcPrice" data-i18n="calc.price">Price per kg (₹)</label>
+          <input type="number" id="calcPrice" min="0" step="0.5" placeholder="e.g. 165">
+        </div>
+        <button class="primary" type="submit" data-i18n="calc.calc">Calculate</button>
+      </form>
+      <div id="calcResult"></div>
     </div>
   </section>
 
@@ -310,7 +363,7 @@
 <footer>
   <div class="wrap">
     <p data-i18n="footer.disclaimer">The tapping advisory is a rule-of-thumb estimate from public weather forecasts, not a substitute for on-the-ground judgement or official Rubber Board guidance. Price entries are stored only in your browser's local storage.</p>
-    <p data-i18n="footer.credit">Weather data: Open-Meteo. Built as an independent, free community tool — no account, no tracking.</p>
+    <p data-i18n="footer.credit">Weather data: Open-Meteo. Radar: Windy.com. Built as an independent, free community tool — no account, no tracking.</p>
   </div>
 </footer>
 
@@ -325,21 +378,34 @@
       "hero.title":"Should you tap today?",
       "hero.subtitle":"A free, no-login tool for Kerala's rubber tappers and estate owners — a quick weather-based tapping call, and a simple place to log daily sheet prices.",
       "advisory.title":"Tapping advisory",
-      "advisory.lead":"Pick your area. We check rain over the last day and the early-morning tapping window (4–10 AM) using live weather data.",
-      "advisory.district":"Area","advisory.check":"Check conditions",
+      "advisory.lead":"Search your exact town or estate — weather can differ a lot even within one district. We check rain over the last day and the early-morning tapping window (4–10 AM) using live weather data.",
+      "advisory.searchLabel":"Search any place in Kerala","advisory.searchBtn":"Search",
+      "advisory.district":"Or pick a quick preset","advisory.check":"Check conditions",
       "advisory.temp":"Temperature","advisory.hum":"Humidity","advisory.rain24":"Rain (24h)",
-      "local.title":"Local info, live",
-      "local.lead":"These open a live DuckDuckGo search in a new tab for your selected area — real, current results, no app or API key involved.",
-      "local.price.h":"Today's rubber price","local.price.p":"Search the latest RSS4 / sheet rate for your area",
+      "advisory.radar":"Live rain radar","advisory.radarLead":"Watch rain move in over your area, powered by Windy.com.",
+      "advisory.showing":"Showing: ","advisory.searching":"Searching…","advisory.noResults":"No matches found.","advisory.searchFailed":"Search failed. Please try again.",
+      "local.title":"Local info",
+      "local.lead":"These open a quick web search in a new tab for your selected area — for things we can't show directly on the page.",
       "local.society.h":"Rubber Producer Society","local.society.p":"Find your nearest society or Rubber Board office",
       "local.news.h":"Kerala rubber market news","local.news.p":"Latest market news and price trend coverage",
       "prices.title":"Price log",
       "prices.lead":"Log your daily RSS4 / sheet rubber price (₹ per kg) to track your own local trend. Saved only in this browser — nothing is sent anywhere.",
+      "prices.todayLabel":"Today's price","prices.noPriceYet":"No price logged yet — add today's rate below.",
+      "prices.lastLogged":"Last logged: ","prices.notToday":" (not today — add a fresh entry)",
       "prices.date":"Date","prices.value":"Price (₹/kg)","prices.add":"Add entry",
       "prices.thDate":"Date","prices.thPrice":"₹/kg","prices.thChange":"Change",
       "prices.empty":"No entries yet — add today's price above.",
       "prices.clear":"Clear all entries",
       "prices.official":"Cross-check with your local Rubber Marketing Society / Rubber Board bulletin for the official rate.",
+      "calc.title":"Price calculator","calc.lead":"Work out today's sale value, and see a simple hold/sell signal based on your own logged price trend.",
+      "calc.grade":"Grade","calc.gradeSheet":"RSS Sheet","calc.gradeLump":"Lump / Ottupaal","calc.gradeLatex":"Field Latex",
+      "calc.qty":"Quantity (kg)","calc.price":"Price per kg (₹)","calc.calc":"Calculate","calc.total":"Total value",
+      "calc.enterValid":"Enter a valid quantity and price.",
+      "calc.needMore":"Log a few more days of prices to get a hold/sell signal.",
+      "calc.up":"Today's price is about {pct}% above your recent average — if you can afford to wait, some tappers hold a little longer in this situation.",
+      "calc.down":"Today's price is about {pct}% below your recent average.",
+      "calc.flat":"Today's price is close to your recent average — no strong signal either way.",
+      "calc.disclaimer":"This is only a reflection of your own recently logged prices, not market advice or a forecast.",
       "tips.title":"Good practice tips",
       "tips.lead":"General guidance — always follow your estate/Rubber Board extension officer's advice for your specific trees and soil.",
       "tip1.h":"Tap early, before the bark dries","tip1.p":"Latex flows best in cool, humid pre-dawn hours. Aim to finish tapping before direct sun hits the panel.",
@@ -349,28 +415,41 @@
       "tip5.h":"Rest days matter","tip5.p":"Standard d/2 or d/3 tapping systems give the tree recovery time. Skipping rest days for short-term yield wears trees out faster.",
       "tip6.h":"Tap safely","tip6.p":"Early-morning tapping means low light — carry a headlamp, wear closed footwear, and be mindful of snakes and slippery slopes.",
       "footer.disclaimer":"The tapping advisory is a rule-of-thumb estimate from public weather forecasts, not a substitute for on-the-ground judgement or official Rubber Board guidance. Price entries are stored only in your browser's local storage.",
-      "footer.credit":"Weather data: Open-Meteo. Built as an independent, free community tool — no account, no tracking."
+      "footer.credit":"Weather data: Open-Meteo. Radar: Windy.com. Built as an independent, free community tool — no account, no tracking."
     },
     ml: {
       "nav.advisory":"ഉപദേശം","nav.local":"പ്രാദേശികം","nav.prices":"വില","nav.tips":"നിർദ്ദേശങ്ങൾ",
       "hero.title":"ഇന്ന് ടാപ്പിംഗ് നടത്താമോ?",
       "hero.subtitle":"കേരളത്തിലെ റബ്ബർ ടാപ്പർമാർക്കും എസ്റ്റേറ്റ് ഉടമകൾക്കും വേണ്ടിയുള്ള സൗജന്യ ഉപകരണം — കാലാവസ്ഥ അടിസ്ഥാനമാക്കിയുള്ള ടാപ്പിംഗ് നിർദ്ദേശവും ദിവസേനയുള്ള റബ്ബർ വില രേഖപ്പെടുത്താനുള്ള ലളിതമായ സൗകര്യവും.",
       "advisory.title":"ടാപ്പിംഗ് ഉപദേശം",
-      "advisory.lead":"നിങ്ങളുടെ പ്രദേശം തിരഞ്ഞെടുക്കുക. കഴിഞ്ഞ 24 മണിക്കൂറിലെ മഴയും പുലർച്ചെ 4–10 മണി വരെയുള്ള ടാപ്പിംഗ് സമയത്തെ കാലാവസ്ഥയും ഞങ്ങൾ പരിശോധിക്കും.",
-      "advisory.district":"പ്രദേശം","advisory.check":"കാലാവസ്ഥ പരിശോധിക്കുക",
+      "advisory.lead":"നിങ്ങളുടെ കൃത്യമായ സ്ഥലം അല്ലെങ്കിൽ എസ്റ്റേറ്റ് തിരയുക — ഒരു ജില്ലയ്ക്കുള്ളിൽ തന്നെ കാലാവസ്ഥ വളരെ വ്യത്യാസപ്പെടാം. കഴിഞ്ഞ 24 മണിക്കൂറിലെ മഴയും പുലർച്ചെ 4–10 മണി വരെയുള്ള ടാപ്പിംഗ് സമയത്തെ കാലാവസ്ഥയും ഞങ്ങൾ പരിശോധിക്കും.",
+      "advisory.searchLabel":"കേരളത്തിലെ ഏതെങ്കിലും സ്ഥലം തിരയുക","advisory.searchBtn":"തിരയുക",
+      "advisory.district":"അല്ലെങ്കിൽ ഒരു ദ്രുത പ്രിസെറ്റ് തിരഞ്ഞെടുക്കുക","advisory.check":"കാലാവസ്ഥ പരിശോധിക്കുക",
       "advisory.temp":"താപനില","advisory.hum":"ആർദ്രത","advisory.rain24":"മഴ (24 മണിക്കൂർ)",
-      "local.title":"പ്രാദേശിക വിവരങ്ങൾ, തത്സമയം",
-      "local.lead":"നിങ്ങളുടെ പ്രദേശത്തിനായി ഒരു തത്സമയ DuckDuckGo തിരയൽ പുതിയ ടാബിൽ തുറക്കുന്നു — യഥാർത്ഥ, നിലവിലെ ഫലങ്ങൾ, ആപ്പോ API-യോ വേണ്ട.",
-      "local.price.h":"ഇന്നത്തെ റബ്ബർ വില","local.price.p":"നിങ്ങളുടെ പ്രദേശത്തെ ഏറ്റവും പുതിയ RSS4 / ഷീറ്റ് നിരക്ക് തിരയുക",
+      "advisory.radar":"തത്സമയ മഴ റഡാർ","advisory.radarLead":"നിങ്ങളുടെ പ്രദേശത്തേക്ക് മഴ നീങ്ങുന്നത് കാണുക — Windy.com മുഖേന.",
+      "advisory.showing":"കാണിക്കുന്നത്: ","advisory.searching":"തിരയുന്നു…","advisory.noResults":"ഫലങ്ങളൊന്നും ലഭ്യമായില്ല.","advisory.searchFailed":"തിരയൽ പരാജയപ്പെട്ടു. വീണ്ടും ശ്രമിക്കുക.",
+      "local.title":"പ്രാദേശിക വിവരങ്ങൾ",
+      "local.lead":"നിങ്ങളുടെ പ്രദേശത്തിനായി ഒരു തിരയൽ പുതിയ ടാബിൽ തുറക്കുന്നു — പേജിൽ നേരിട്ട് കാണിക്കാൻ കഴിയാത്ത കാര്യങ്ങൾക്ക്.",
       "local.society.h":"റബ്ബർ പ്രൊഡ്യൂസേഴ്‌സ് സൊസൈറ്റി","local.society.p":"നിങ്ങളുടെ അടുത്തുള്ള സൊസൈറ്റി അല്ലെങ്കിൽ റബ്ബർ ബോർഡ് ഓഫീസ് കണ്ടെത്തുക",
       "local.news.h":"കേരള റബ്ബർ മാർക്കറ്റ് വാർത്ത","local.news.p":"ഏറ്റവും പുതിയ വിപണി വാർത്തയും വില പ്രവണതയും",
       "prices.title":"വില രേഖ",
       "prices.lead":"നിങ്ങളുടെ പ്രദേശത്തെ പ്രവണത അറിയാൻ ദിവസേനയുള്ള RSS4 / ഷീറ്റ് റബ്ബർ വില (₹/കിലോ) രേഖപ്പെടുത്തുക. ഈ ബ്രൗസറിൽ മാത്രം സൂക്ഷിക്കുന്നു — എവിടേക്കും അയക്കുന്നില്ല.",
+      "prices.todayLabel":"ഇന്നത്തെ വില","prices.noPriceYet":"ഇതുവരെ വില രേഖപ്പെടുത്തിയിട്ടില്ല — താഴെ ഇന്നത്തെ നിരക്ക് ചേർക്കുക.",
+      "prices.lastLogged":"അവസാനം രേഖപ്പെടുത്തിയത്: ","prices.notToday":" (ഇന്നത്തേതല്ല — പുതിയ എൻട്രി ചേർക്കുക)",
       "prices.date":"തീയതി","prices.value":"വില (₹/കിലോ)","prices.add":"ചേർക്കുക",
       "prices.thDate":"തീയതി","prices.thPrice":"₹/കിലോ","prices.thChange":"മാറ്റം",
       "prices.empty":"ഇതുവരെ വിവരങ്ങളൊന്നും ചേർത്തിട്ടില്ല — ഇന്നത്തെ വില മുകളിൽ ചേർക്കുക.",
       "prices.clear":"എല്ലാം മായ്ക്കുക",
       "prices.official":"ഔദ്യോഗിക നിരക്കിന് നിങ്ങളുടെ റബ്ബർ മാർക്കറ്റിംഗ് സൊസൈറ്റി / റബ്ബർ ബോർഡ് ബുള്ളറ്റിൻ പരിശോധിക്കുക.",
+      "calc.title":"വില കാൽക്കുലേറ്റർ","calc.lead":"ഇന്നത്തെ വിൽപ്പന മൂല്യം കണക്കാക്കുക, നിങ്ങളുടെ സ്വന്തം വില പ്രവണതയെ അടിസ്ഥാനമാക്കി ഒരു ലളിതമായ ഹോൾഡ്/സെൽ സൂചനയും കാണുക.",
+      "calc.grade":"ഗ്രേഡ്","calc.gradeSheet":"RSS ഷീറ്റ്","calc.gradeLump":"ലംപ് / ഒട്ടുപാൽ","calc.gradeLatex":"വെട്ടുപാൽ",
+      "calc.qty":"അളവ് (കിലോ)","calc.price":"വില ഓരോ കിലോയ്ക്കും (₹)","calc.calc":"കണക്കാക്കുക","calc.total":"ആകെ മൂല്യം",
+      "calc.enterValid":"സാധുവായ അളവും വിലയും നൽകുക.",
+      "calc.needMore":"ഹോൾഡ്/സെൽ സൂചന ലഭിക്കാൻ കുറച്ചു ദിവസത്തെ വില കൂടി രേഖപ്പെടുത്തുക.",
+      "calc.up":"ഇന്നത്തെ വില നിങ്ങളുടെ സമീപകാല ശരാശരിയേക്കാൾ ഏകദേശം {pct}% കൂടുതലാണ് — സാമ്പത്തിക സാഹചര്യം അനുവദിക്കുന്നെങ്കിൽ കുറച്ചു കൂടി കാത്തിരിക്കുന്നത് പലരും പരിഗണിക്കാറുണ്ട്.",
+      "calc.down":"ഇന്നത്തെ വില നിങ്ങളുടെ സമീപകാല ശരാശരിയേക്കാൾ ഏകദേശം {pct}% കുറവാണ്.",
+      "calc.flat":"ഇന്നത്തെ വില നിങ്ങളുടെ സമീപകാല ശരാശരിയോട് ഏകദേശം അടുത്താണ് — വ്യക്തമായ സൂചനയില്ല.",
+      "calc.disclaimer":"ഇത് നിങ്ങൾ സ്വയം രേഖപ്പെടുത്തിയ വിലകളുടെ ഒരു പ്രതിഫലനം മാത്രമാണ് — വിപണി ഉപദേശമോ പ്രവചനമോ അല്ല.",
       "tips.title":"നല്ല രീതികൾ",
       "tips.lead":"പൊതു നിർദ്ദേശങ്ങൾ മാത്രം — നിങ്ങളുടെ എസ്റ്റേറ്റ്/റബ്ബർ ബോർഡ് ഉദ്യോഗസ്ഥന്റെ നിർദ്ദേശം എപ്പോഴും പിന്തുടരുക.",
       "tip1.h":"തൊലി ഉണങ്ങുന്നതിന് മുൻപ് നേരത്തെ ടാപ്പ് ചെയ്യുക","tip1.p":"തണുത്ത, ഈർപ്പമുള്ള പുലർച്ചെ സമയങ്ങളിൽ പാൽ നന്നായി ഒഴുകും. വെയിൽ പാനലിൽ വീഴുന്നതിന് മുൻപ് ടാപ്പിംഗ് പൂർത്തിയാക്കുക.",
@@ -395,6 +474,7 @@
     document.getElementById("langToggle").textContent = lang === "ml" ? "English" : "മലയാളം";
     localStorage.setItem("rubbertap_lang", lang);
     renderPrices(); // labels inside change/date column depend on locale-ish formatting
+    if (typeof renderLocationLabel === "function") renderLocationLabel();
   }
 
   document.getElementById("langToggle").addEventListener("click", function(){
@@ -423,10 +503,94 @@
     opt.textContent = d.en;
     districtSelect.appendChild(opt);
   });
-  var savedDistrict = localStorage.getItem("rubbertap_district");
-  if (savedDistrict && DISTRICTS.some(function(d){return d.id === savedDistrict;})) {
-    districtSelect.value = savedDistrict;
+
+  // ---------- Current location (search result or preset) ----------
+  var currentLocation = null; // {name, lat, lon}
+
+  function renderLocationLabel(){
+    var labelEl = document.getElementById("currentLocLabel");
+    if (!currentLocation) { labelEl.textContent = ""; return; }
+    var lang = document.body.getAttribute("data-lang");
+    var dict = STR[lang] || STR.en;
+    labelEl.textContent = dict["advisory.showing"] + currentLocation.name;
   }
+
+  function setLocation(loc, opts){
+    currentLocation = loc;
+    localStorage.setItem("rubbertap_location", JSON.stringify(loc));
+    renderLocationLabel();
+    updateLocalLinks();
+    updateWindyFrame();
+    if (!opts || opts.skipCheck !== true) checkAdvisory();
+  }
+
+  var savedLocRaw = localStorage.getItem("rubbertap_location");
+  var savedLoc = null;
+  try { savedLoc = savedLocRaw ? JSON.parse(savedLocRaw) : null; } catch(e){ savedLoc = null; }
+  currentLocation = (savedLoc && typeof savedLoc.lat === "number" && typeof savedLoc.lon === "number")
+    ? savedLoc
+    : {name: DISTRICTS[0].en, lat: DISTRICTS[0].lat, lon: DISTRICTS[0].lon};
+
+  districtSelect.addEventListener("change", function(){
+    var id = districtSelect.value;
+    var d = DISTRICTS.filter(function(x){return x.id===id;})[0];
+    if (d) setLocation({name: d.en, lat: d.lat, lon: d.lon});
+  });
+
+  // ---------- Place search (Open-Meteo Geocoding API — free, no key, CORS-enabled) ----------
+  async function searchPlaces(query){
+    var url = "https://geocoding-api.open-meteo.com/v1/search?name=" + encodeURIComponent(query) + "&count=8&language=en&format=json";
+    var res = await fetch(url);
+    if (!res.ok) throw new Error("geocoding request failed");
+    var data = await res.json();
+    var results = (data.results || []).filter(function(r){ return r.country_code === "IN"; });
+    results.sort(function(a,b){
+      var aK = (a.admin1||"").toLowerCase().indexOf("kerala") >= 0 ? 0 : 1;
+      var bK = (b.admin1||"").toLowerCase().indexOf("kerala") >= 0 ? 0 : 1;
+      return aK - bK;
+    });
+    return results;
+  }
+
+  async function runSearch(){
+    var q = document.getElementById("placeSearch").value.trim();
+    var resultsEl = document.getElementById("searchResults");
+    if (!q) return;
+    var lang = document.body.getAttribute("data-lang");
+    var dict = STR[lang] || STR.en;
+    resultsEl.classList.remove("hidden");
+    resultsEl.innerHTML = "<div style='padding:10px 12px;color:var(--muted);font-size:0.9rem;'>" + dict["advisory.searching"] + "</div>";
+    try{
+      var results = await searchPlaces(q);
+      if (results.length === 0){
+        resultsEl.innerHTML = "<div style='padding:10px 12px;color:var(--muted);font-size:0.9rem;'>" + dict["advisory.noResults"] + "</div>";
+        return;
+      }
+      resultsEl.innerHTML = "";
+      results.forEach(function(r){
+        var parts = [r.name];
+        if (r.admin2) parts.push(r.admin2);
+        if (r.admin1) parts.push(r.admin1);
+        var label = parts.join(", ");
+        var btn = document.createElement("button");
+        btn.type = "button";
+        btn.textContent = label;
+        btn.addEventListener("click", function(){
+          setLocation({name: label, lat: r.latitude, lon: r.longitude});
+          resultsEl.classList.add("hidden");
+          document.getElementById("placeSearch").value = "";
+        });
+        resultsEl.appendChild(btn);
+      });
+    } catch(e){
+      resultsEl.innerHTML = "<div style='padding:10px 12px;color:var(--bad);font-size:0.9rem;'>" + dict["advisory.searchFailed"] + "</div>";
+    }
+  }
+
+  document.getElementById("searchBtn").addEventListener("click", runSearch);
+  document.getElementById("placeSearch").addEventListener("keydown", function(e){
+    if (e.key === "Enter") { e.preventDefault(); runSearch(); }
+  });
 
   // ---------- Advisory ----------
   function fmtDate(d){
@@ -434,10 +598,10 @@
     return y+"-"+m+"-"+day;
   }
 
-  async function fetchAdvisory(district){
+  async function fetchAdvisory(loc){
     var url = "https://api.open-meteo.com/v1/forecast"
-      + "?latitude=" + district.lat
-      + "&longitude=" + district.lon
+      + "?latitude=" + loc.lat
+      + "&longitude=" + loc.lon
       + "&hourly=precipitation_probability,precipitation,relative_humidity_2m"
       + "&daily=precipitation_sum"
       + "&current_weather=true"
@@ -538,14 +702,12 @@
   }
 
   async function checkAdvisory(){
-    var id = districtSelect.value;
-    localStorage.setItem("rubbertap_district", id);
-    var district = DISTRICTS.filter(function(d){return d.id===id;})[0];
+    if (!currentLocation) return;
     var resultEl = document.getElementById("advisoryResult");
     var lang = document.body.getAttribute("data-lang");
     resultEl.innerHTML = "<p style='margin-top:16px;color:var(--muted)'>" + (lang==="ml" ? "കാലാവസ്ഥ പരിശോധിക്കുന്നു…" : "Checking weather…") + "</p>";
     try{
-      var a = await fetchAdvisory(district);
+      var a = await fetchAdvisory(currentLocation);
       var v = verdictFrom(a);
       var dict = STR[lang] || STR.en;
       var statsHtml =
@@ -569,23 +731,43 @@
 
   document.getElementById("checkBtn").addEventListener("click", checkAdvisory);
 
-  // ---------- Local links (DuckDuckGo, district-aware) ----------
+  // ---------- Local links (society / news search, location-aware) ----------
   function updateLocalLinks(){
-    var id = districtSelect.value;
-    var district = DISTRICTS.filter(function(d){return d.id===id;})[0];
-    if (!district) return;
-    var priceQ = encodeURIComponent(district.en + " Kerala RSS4 sheet rubber price today");
-    var societyQ = encodeURIComponent("Rubber Producer Society OR Rubber Board office near " + district.en + " Kerala");
+    if (!currentLocation) return;
+    var societyQ = encodeURIComponent("Rubber Producer Society OR Rubber Board office near " + currentLocation.name + " Kerala");
     var newsQ = encodeURIComponent("Kerala rubber price news");
-    document.getElementById("linkPrice").href = "https://duckduckgo.com/?q=" + priceQ;
     document.getElementById("linkSociety").href = "https://duckduckgo.com/?q=" + societyQ;
     document.getElementById("linkNews").href = "https://duckduckgo.com/?q=" + newsQ;
   }
 
-  districtSelect.addEventListener("change", function(){
-    updateLocalLinks();
-    checkAdvisory();
-  });
+  // ---------- Windy radar embed (official free widget, no API key) ----------
+  function updateWindyFrame(){
+    if (!currentLocation) return;
+    var params = [
+      "lat=" + currentLocation.lat,
+      "lon=" + currentLocation.lon,
+      "detailLat=" + currentLocation.lat,
+      "detailLon=" + currentLocation.lon,
+      "width=650",
+      "height=360",
+      "zoom=8",
+      "level=surface",
+      "overlay=rain",
+      "product=ecmwf",
+      "menu=",
+      "message=true",
+      "marker=true",
+      "calendar=now",
+      "pressure=",
+      "type=map",
+      "location=coordinates",
+      "detail=",
+      "metricWind=default",
+      "metricTemp=default",
+      "radarRange=-1"
+    ].join("&");
+    document.getElementById("windyFrame").src = "https://embed.windy.com/embed2.html?" + params;
+  }
 
   // ---------- Price log ----------
   var PRICE_KEY = "rubbertap_prices";
@@ -596,7 +778,24 @@
   }
   function savePrices(list){ localStorage.setItem(PRICE_KEY, JSON.stringify(list)); }
 
+  function renderTodayPrice(){
+    var list = loadPrices().slice().sort(function(a,b){ return b.date.localeCompare(a.date); });
+    var lang = document.body.getAttribute("data-lang");
+    var dict = STR[lang] || STR.en;
+    var valEl = document.getElementById("todayPriceValue");
+    var noteEl = document.getElementById("todayPriceNote");
+    if (list.length === 0){
+      valEl.textContent = "—";
+      noteEl.textContent = dict["prices.noPriceYet"];
+      return;
+    }
+    valEl.textContent = "₹" + Number(list[0].price).toFixed(2) + " /kg";
+    var isToday = list[0].date === fmtDate(new Date());
+    noteEl.textContent = dict["prices.lastLogged"] + list[0].date + (isToday ? "" : dict["prices.notToday"]);
+  }
+
   function renderPrices(){
+    renderTodayPrice();
     var list = loadPrices().slice().sort(function(a,b){ return b.date.localeCompare(a.date); });
     var tbody = document.getElementById("priceTbody");
     var emptyEl = document.getElementById("priceEmpty");
@@ -669,11 +868,58 @@
     }
   });
 
+  // ---------- Price calculator ----------
+  function computeHoldSellSignal(){
+    var list = loadPrices().slice().sort(function(a,b){ return b.date.localeCompare(a.date); });
+    var lang = document.body.getAttribute("data-lang");
+    var dict = STR[lang] || STR.en;
+    if (list.length < 3){
+      return { text: dict["calc.needMore"], level: "warn" };
+    }
+    var last14 = list.slice(0, 14);
+    var avg = last14.reduce(function(a,e){return a+Number(e.price);},0) / last14.length;
+    var latest = Number(list[0].price);
+    var diffPct = ((latest - avg) / avg) * 100;
+    if (diffPct >= 2){
+      return { text: dict["calc.up"].replace("{pct}", diffPct.toFixed(1)), level: "good" };
+    } else if (diffPct <= -2){
+      return { text: dict["calc.down"].replace("{pct}", Math.abs(diffPct).toFixed(1)), level: "bad" };
+    }
+    return { text: dict["calc.flat"], level: "warn" };
+  }
+
+  document.getElementById("calcForm").addEventListener("submit", function(e){
+    e.preventDefault();
+    var qty = parseFloat(document.getElementById("calcQty").value);
+    var price = parseFloat(document.getElementById("calcPrice").value);
+    var resultEl = document.getElementById("calcResult");
+    var lang = document.body.getAttribute("data-lang");
+    var dict = STR[lang] || STR.en;
+    if (isNaN(qty) || isNaN(price) || qty <= 0 || price <= 0){
+      resultEl.innerHTML = "<p style='margin-top:14px;color:var(--bad)'>" + dict["calc.enterValid"] + "</p>";
+      return;
+    }
+    var total = qty * price;
+    var signal = computeHoldSellSignal();
+    var icon = signal.level === "good" ? "📈" : (signal.level === "bad" ? "📉" : "➖");
+    resultEl.innerHTML =
+      '<div class="stats-grid"><div class="stat"><div class="val">₹' + total.toFixed(2) + '</div><div class="lbl">' + dict["calc.total"] + '</div></div></div>' +
+      '<div class="verdict ' + signal.level + '" style="margin-top:12px;"><div class="icon">' + icon + '</div><div><p style="margin:0;">' + signal.text + '</p></div></div>' +
+      '<p style="margin-top:10px;font-size:0.78rem;color:var(--muted);">' + dict["calc.disclaimer"] + '</p>';
+  });
+
   // ---------- init ----------
   document.getElementById("priceDate").value = fmtDate(new Date());
   applyLang(localStorage.getItem("rubbertap_lang") || "en");
   renderPrices();
+  var initialPrices = loadPrices();
+  if (initialPrices.length > 0){
+    var latestEntry = initialPrices.slice().sort(function(a,b){ return b.date.localeCompare(a.date); })[0];
+    document.getElementById("calcPrice").value = Number(latestEntry.price).toFixed(2);
+  }
+  renderLocationLabel();
   updateLocalLinks();
+  updateWindyFrame();
   checkAdvisory();
 })();
 </script>
