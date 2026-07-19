@@ -3,22 +3,19 @@
 // can't just `fetch()` these source pages directly) and word-searches the
 // fetched text for an RSS4 price, returning a small JSON object.
 //
-// STATUS: best-effort, NOT YET VERIFIED against either live page. The
-// environment this was written in has no network access to any external
-// site (confirmed via repeated blocked requests to both URLs below), so
-// PRICE_PATTERN has never actually been run against real page text from
-// either source.
+// STATUS: verified against real output from thecanarapost.com (see below).
+// kisandeals.com returns HTTP 403 to server-side requests (likely bot
+// protection) — kept in the list as a first attempt in case that changes,
+// but thecanarapost.com is the one actually working right now.
 //
-// Tries SOURCES in order and returns the first one that yields a
-// sane-looking price. If a source fails, its JSON response includes
-// debugging context (the text around a near-miss, or a stripped excerpt
-// of the page) so the failure can be diagnosed and the pattern fixed from
-// that response alone — no screenshot needed.
+// thecanarapost.com lists an "International Market (Bangkok)" RSS4 price
+// BEFORE the real Kottayam domestic price table, so a plain "find RSS4"
+// search grabs the wrong number (confirmed: it returned 28200, the Bangkok
+// figure, not a ₹/kg value at all). Fix: only search the text after the
+// LAST occurrence of "Kottayam", which lands after the "Category Kottayam"
+// table heading and finds the real domestic RSS4 figure.
 const SOURCES = [
-  // Structured mandi-price listing — likely a table of market/grade/price
-  // rows, which tends to be more consistent to parse than prose.
   "https://kisandeals.com/mandiprices/RUBBER/KERALA/ALL",
-  // Prose/news-style daily price post, as a fallback.
   "https://thecanarapost.com/todays-rubber-prices-kottayam-and-international-market/",
 ];
 
@@ -64,18 +61,24 @@ async function tryExtract(sourceUrl) {
     const html = await res.text();
     const text = stripHtml(html);
 
-    const match = text.match(PRICE_PATTERN);
+    // Restrict the search to text after the last "Kottayam" mention, so we
+    // land on the domestic Kottayam table rather than an earlier
+    // international-market mention of the same grade label.
+    const kottayamIdx = text.toLowerCase().lastIndexOf("kottayam");
+    const searchText = kottayamIdx >= 0 ? text.slice(kottayamIdx) : text;
+
+    const match = searchText.match(PRICE_PATTERN);
     if (!match) {
       return {
         ok: false,
-        data: { source: sourceUrl, error: "price pattern not found on page", excerpt: text.slice(0, 800) },
+        data: { source: sourceUrl, error: "price pattern not found on page", excerpt: searchText.slice(0, 800) },
       };
     }
 
     const rawNumber = match[1].replace(",", ".");
     const price = parseFloat(rawNumber);
     const matchIndex = match.index || 0;
-    const context = text.slice(Math.max(0, matchIndex - 40), matchIndex + 120);
+    const context = searchText.slice(Math.max(0, matchIndex - 40), matchIndex + 120);
 
     if (isNaN(price) || price < SANITY_MIN || price > SANITY_MAX) {
       return {
