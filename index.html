@@ -219,11 +219,21 @@
           <div id="searchResults" class="hidden"></div>
         </div>
       </div>
+      <label style="display:flex;align-items:center;gap:8px;margin-top:14px;font-size:0.9rem;cursor:pointer;">
+        <input type="checkbox" id="rainGuardToggle" style="width:auto;">
+        <span data-i18n="advisory.rainGuard">🌂 My panels have rain guards installed</span>
+      </label>
       <div class="row" style="margin-top:12px;align-items:center;">
         <button class="primary" id="checkBtn" type="button" data-i18n="advisory.check">Check conditions</button>
       </div>
       <p id="currentLocLabel" style="margin:10px 0 0;font-size:0.85rem;color:var(--muted);"></p>
       <div id="advisoryResult"></div>
+    </div>
+
+    <div class="card" style="margin-top:14px;">
+      <h3 style="margin:0 0 4px;font-size:1rem;color:var(--green-800);" data-i18n="advisory.forecastTitle">Coming days</h3>
+      <p class="lead" style="margin-bottom:12px;" data-i18n="advisory.forecastLead">Plan ahead — forecasts get less reliable the further out they go, treat anything past ~7 days as a rough guide only.</p>
+      <div id="forecastStrip" style="display:flex;gap:8px;overflow-x:auto;padding-bottom:4px;"></div>
     </div>
 
     <div class="card" style="margin-top:14px;">
@@ -320,6 +330,37 @@
       </form>
       <div id="calcResult"></div>
     </div>
+
+    <div class="card" style="margin-top:14px;">
+      <h3 style="margin:0 0 4px;font-size:1rem;color:var(--green-800);" data-i18n="earn.title">Estimate today's earnings</h3>
+      <p class="lead" style="margin-bottom:12px;" data-i18n="earn.lead">Yield per tree varies a lot by clone, tree age, and tapping system — enter your own estimate rather than a guess from us.</p>
+      <form id="earnForm" class="row">
+        <div class="field">
+          <label for="earnTrees" data-i18n="earn.trees">Trees tapped today</label>
+          <input type="number" id="earnTrees" min="0" step="1" placeholder="e.g. 300">
+        </div>
+        <div class="field">
+          <label for="earnYield" data-i18n="earn.yield">Est. yield per tree (g)</label>
+          <input type="number" id="earnYield" min="0" step="1" placeholder="e.g. 35">
+        </div>
+        <div class="field">
+          <label for="earnPrice" data-i18n="earn.price">Price per kg (₹)</label>
+          <input type="number" id="earnPrice" min="0" step="0.5" placeholder="e.g. 165">
+        </div>
+        <button class="primary" type="submit" data-i18n="earn.calc">Estimate</button>
+      </form>
+      <div id="earnResult"></div>
+    </div>
+
+    <div class="card" style="margin-top:14px;">
+      <h3 style="margin:0 0 4px;font-size:1rem;color:var(--green-800);" data-i18n="wage.title">What tappers are typically paid</h3>
+      <ul style="margin:0 0 10px;padding-left:18px;font-size:0.9rem;color:var(--text);">
+        <li data-i18n="wage.p1">The most common arrangement in Kerala is a share system — the tapper keeps roughly a third of the latex/sheet produced (or its cash value), instead of a fixed daily wage. Exact shares are negotiated per estate.</li>
+        <li data-i18n="wage.p2">Some estates instead pay a fixed daily wage regardless of yield, sometimes with a small per-kg bonus above a set quota.</li>
+        <li data-i18n="wage.p3">Rates vary by estate, district, and season, and change over time — check current rates with your local Rubber Producer Society rather than relying on a fixed number here.</li>
+      </ul>
+      <a class="readmore" target="_blank" rel="noopener" href="https://duckduckgo.com/?q=current+rubber+tapper+daily+wage+share+system+Kerala" data-i18n="tips.readmore">🔎 Discussions &amp; articles</a>
+    </div>
   </section>
 
   <section id="tips">
@@ -409,6 +450,10 @@
       "advisory.temp":"Temperature","advisory.hum":"Humidity","advisory.rain24":"Rain (24h)",
       "advisory.radar":"Live rain radar","advisory.radarLead":"Watch rain move in over your area, powered by Windy.com.",
       "advisory.showing":"Showing: ","advisory.searching":"Searching…","advisory.noResults":"No matches found.","advisory.searchFailed":"Search failed. Please try again.",
+      "advisory.rainGuard":"🌂 My panels have rain guards installed",
+      "advisory.forecastTitle":"Coming days","advisory.forecastLead":"Plan ahead — forecasts get less reliable the further out they go, treat anything past ~7 days as a rough guide only.",
+      "advisory.idealTitle":"Ideal conditions","advisory.idealTemp":"22–30°C","advisory.idealHum":"80–95%","advisory.idealRain":"0mm, dry panel",
+      "advisory.vsIdeal":"vs. ideal",
       "local.title":"Local info",
       "local.lead":"These open a quick web search in a new tab for your selected area — for things we can't show directly on the page.",
       "local.society.h":"Rubber Producer Society","local.society.p":"Find your nearest society or Rubber Board office",
@@ -435,6 +480,13 @@
       "tips.title":"Good practice tips",
       "tips.lead":"General guidance — always follow your estate/Rubber Board extension officer's advice for your specific trees and soil.",
       "tips.readmore":"🔎 Discussions & articles",
+      "earn.title":"Estimate today's earnings","earn.lead":"Yield per tree varies a lot by clone, tree age, and tapping system — enter your own estimate rather than a guess from us.",
+      "earn.trees":"Trees tapped today","earn.yield":"Est. yield per tree (g)","earn.price":"Price per kg (₹)","earn.calc":"Estimate",
+      "earn.totalYield":"Est. yield today","earn.totalValue":"Est. earnings","earn.enterValid":"Enter a valid number of trees and yield.",
+      "wage.title":"What tappers are typically paid",
+      "wage.p1":"The most common arrangement in Kerala is a share system — the tapper keeps roughly a third of the latex/sheet produced (or its cash value), instead of a fixed daily wage. Exact shares are negotiated per estate.",
+      "wage.p2":"Some estates instead pay a fixed daily wage regardless of yield, sometimes with a small per-kg bonus above a set quota.",
+      "wage.p3":"Rates vary by estate, district, and season, and change over time — check current rates with your local Rubber Producer Society rather than relying on a fixed number here.",
       "tip1.h":"Tap early, before the bark dries",
       "tip1.p1":"Latex flows best in cool, humid pre-dawn hours.","tip1.p2":"Aim to finish tapping before direct sun hits the panel.",
       "tip2.h":"Never tap on wet bark",
@@ -461,6 +513,10 @@
       "advisory.temp":"താപനില","advisory.hum":"ആർദ്രത","advisory.rain24":"മഴ (24 മണിക്കൂർ)",
       "advisory.radar":"തത്സമയ മഴ റഡാർ","advisory.radarLead":"നിങ്ങളുടെ പ്രദേശത്തേക്ക് മഴ നീങ്ങുന്നത് കാണുക — Windy.com മുഖേന.",
       "advisory.showing":"കാണിക്കുന്നത്: ","advisory.searching":"തിരയുന്നു…","advisory.noResults":"ഫലങ്ങളൊന്നും ലഭ്യമായില്ല.","advisory.searchFailed":"തിരയൽ പരാജയപ്പെട്ടു. വീണ്ടും ശ്രമിക്കുക.",
+      "advisory.rainGuard":"🌂 എന്റെ പാനലുകളിൽ റെയിൻ ഗാർഡ് ഉണ്ട്",
+      "advisory.forecastTitle":"വരാനിരിക്കുന്ന ദിവസങ്ങൾ","advisory.forecastLead":"മുൻകൂട്ടി ആസൂത്രണം ചെയ്യുക — ദൂരെയുള്ള ദിവസങ്ങളിലേക്കുള്ള പ്രവചനം അത്ര കൃത്യമല്ല, 7 ദിവസത്തിനപ്പുറമുള്ളത് ഒരു ഏകദേശ സൂചന മാത്രമായി കാണുക.",
+      "advisory.idealTitle":"അനുയോജ്യമായ സാഹചര്യം","advisory.idealTemp":"22–30°C","advisory.idealHum":"80–95%","advisory.idealRain":"0mm, ഉണങ്ങിയ പാനൽ",
+      "advisory.vsIdeal":"അനുയോജ്യതയുമായി താരതമ്യം",
       "local.title":"പ്രാദേശിക വിവരങ്ങൾ",
       "local.lead":"നിങ്ങളുടെ പ്രദേശത്തിനായി ഒരു തിരയൽ പുതിയ ടാബിൽ തുറക്കുന്നു — പേജിൽ നേരിട്ട് കാണിക്കാൻ കഴിയാത്ത കാര്യങ്ങൾക്ക്.",
       "local.society.h":"റബ്ബർ പ്രൊഡ്യൂസേഴ്‌സ് സൊസൈറ്റി","local.society.p":"നിങ്ങളുടെ അടുത്തുള്ള സൊസൈറ്റി അല്ലെങ്കിൽ റബ്ബർ ബോർഡ് ഓഫീസ് കണ്ടെത്തുക",
@@ -487,6 +543,13 @@
       "tips.title":"നല്ല രീതികൾ",
       "tips.lead":"പൊതു നിർദ്ദേശങ്ങൾ മാത്രം — നിങ്ങളുടെ എസ്റ്റേറ്റ്/റബ്ബർ ബോർഡ് ഉദ്യോഗസ്ഥന്റെ നിർദ്ദേശം എപ്പോഴും പിന്തുടരുക.",
       "tips.readmore":"🔎 ചർച്ചകളും ലേഖനങ്ങളും",
+      "earn.title":"ഇന്നത്തെ വരുമാനം കണക്കാക്കുക","earn.lead":"ഓരോ മരത്തിൽ നിന്നുമുള്ള വിളവ് ക്ലോൺ, മരത്തിന്റെ പ്രായം, ടാപ്പിംഗ് സമ്പ്രദായം എന്നിവ അനുസരിച്ച് വളരെ വ്യത്യാസപ്പെടും — ഞങ്ങളുടെ ഊഹത്തേക്കാൾ നിങ്ങളുടെ സ്വന്തം കണക്ക് നൽകുക.",
+      "earn.trees":"ഇന്ന് ടാപ്പ് ചെയ്ത മരങ്ങൾ","earn.yield":"ഓരോ മരത്തിലും ഏകദേശ വിളവ് (ഗ്രാം)","earn.price":"വില ഓരോ കിലോയ്ക്കും (₹)","earn.calc":"കണക്കാക്കുക",
+      "earn.totalYield":"ഏകദേശ വിളവ്","earn.totalValue":"ഏകദേശ വരുമാനം","earn.enterValid":"സാധുവായ മരങ്ങളുടെ എണ്ണവും വിളവും നൽകുക.",
+      "wage.title":"ടാപ്പർമാർക്ക് സാധാരണ ലഭിക്കുന്ന പ്രതിഫലം",
+      "wage.p1":"കേരളത്തിൽ ഏറ്റവും സാധാരണമായത് ഒരു പങ്കുവയ്പ്പ് സമ്പ്രദായമാണ് — സ്ഥിരമായ ദിവസ വേതനത്തിന് പകരം, ഉത്പാദിപ്പിക്കുന്ന പാൽ/ഷീറ്റിന്റെ ഏകദേശം മൂന്നിലൊന്ന് (അല്ലെങ്കിൽ അതിന്റെ പണമൂല്യം) ടാപ്പർക്ക് ലഭിക്കും. കൃത്യമായ പങ്ക് ഓരോ എസ്റ്റേറ്റിലും വ്യത്യാസപ്പെടും.",
+      "wage.p2":"ചില എസ്റ്റേറ്റുകൾ വിളവ് കണക്കിലെടുക്കാതെ സ്ഥിരമായ ദിവസ വേതനം നൽകുന്നു, ചിലപ്പോൾ ഒരു നിശ്ചിത അളവിന് മുകളിൽ ചെറിയ ബോണസോടെ.",
+      "wage.p3":"നിരക്കുകൾ എസ്റ്റേറ്റ്, ജില്ല, സീസൺ എന്നിവ അനുസരിച്ച് വ്യത്യാസപ്പെടുകയും കാലക്രമേണ മാറുകയും ചെയ്യും — ഇവിടെയുള്ള ഒരു നിശ്ചിത സംഖ്യയെ ആശ്രയിക്കുന്നതിന് പകരം നിങ്ങളുടെ പ്രാദേശിക റബ്ബർ പ്രൊഡ്യൂസേഴ്‌സ് സൊസൈറ്റിയിൽ നിലവിലെ നിരക്ക് പരിശോധിക്കുക.",
       "tip1.h":"തൊലി ഉണങ്ങുന്നതിന് മുൻപ് നേരത്തെ ടാപ്പ് ചെയ്യുക",
       "tip1.p1":"തണുത്ത, ഈർപ്പമുള്ള പുലർച്ചെ സമയങ്ങളിൽ പാൽ നന്നായി ഒഴുകും.","tip1.p2":"വെയിൽ പാനലിൽ വീഴുന്നതിന് മുൻപ് ടാപ്പിംഗ് പൂർത്തിയാക്കുക.",
       "tip2.h":"നനഞ്ഞ തൊലിയിൽ ടാപ്പ് ചെയ്യരുത്",
@@ -616,9 +679,9 @@
       + "?latitude=" + loc.lat
       + "&longitude=" + loc.lon
       + "&hourly=precipitation_probability,precipitation,relative_humidity_2m"
-      + "&daily=precipitation_sum"
+      + "&daily=precipitation_sum,precipitation_probability_max,temperature_2m_max,temperature_2m_min"
       + "&current_weather=true"
-      + "&past_days=1&forecast_days=2"
+      + "&past_days=1&forecast_days=16"
       + "&timezone=Asia%2FKolkata";
     var res = await fetch(url);
     if (!res.ok) throw new Error("weather request failed");
@@ -661,10 +724,32 @@
     var currentTemp = (data.current_weather && typeof data.current_weather.temperature === "number")
       ? data.current_weather.temperature : null;
 
-    return {rainLast24h: rainLast24h, maxProb: maxProb, sumRain: sumRain, avgHum: avgHum, nowRaining: nowRaining, currentTemp: currentTemp};
+    // Multi-day forecast (today onward) for the "coming days" strip.
+    var dailyForecast = [];
+    for (var j = 0; j < data.daily.time.length; j++){
+      if (data.daily.time[j] < todayStr) continue;
+      dailyForecast.push({
+        date: data.daily.time[j],
+        rainSum: data.daily.precipitation_sum[j] || 0,
+        maxProb: data.daily.precipitation_probability_max ? (data.daily.precipitation_probability_max[j] || 0) : 0,
+        tempMax: data.daily.temperature_2m_max ? data.daily.temperature_2m_max[j] : null,
+        tempMin: data.daily.temperature_2m_min ? data.daily.temperature_2m_min[j] : null
+      });
+    }
+
+    return {rainLast24h: rainLast24h, maxProb: maxProb, sumRain: sumRain, avgHum: avgHum, nowRaining: nowRaining, currentTemp: currentTemp, dailyForecast: dailyForecast};
   }
 
-  function verdictFrom(a){
+  // Rain-guarded panels are physically shielded from rain, so they can
+  // tolerate more rain risk before it's actually a problem for the panel
+  // itself (though ground conditions/safety are a separate question).
+  function thresholdsFor(rainGuarded){
+    return rainGuarded
+      ? { badProb: 90, warnRain: 40, warnProb: 55 }
+      : { badProb: 65, warnRain: 20, warnProb: 30 };
+  }
+
+  function verdictFrom(a, rainGuarded){
     var lang = document.body.getAttribute("data-lang");
     var t = lang === "ml" ? {
       badTitle:"ടാപ്പ് ചെയ്യരുത്", warnTitle:"ജാഗ്രതയോടെ ടാപ്പ് ചെയ്യാം", goodTitle:"ടാപ്പിംഗിന് നല്ല സമയം",
@@ -676,7 +761,8 @@
       rModerate:"നേരിയ മഴ സാധ്യതയുണ്ട് (",
       rModerate2:"%). നേരത്തെ തുടങ്ങി മഴയ്ക്ക് മുൻപ് പൂർത്തിയാക്കുക.",
       rDry:"കഴിഞ്ഞ 24 മണിക്കൂറിൽ കാര്യമായ മഴയില്ല.",
-      rHum:"ശരാശരി ആർദ്രത ഏകദേശം "
+      rHum:"ശരാശരി ആർദ്രത ഏകദേശം ",
+      rGuard:"റെയിൻ ഗാർഡ് ഉള്ളതിനാൽ ഈ മഴ സാധ്യത കുറച്ചുകൂടി സഹിക്കാവുന്നതാണ് — എങ്കിലും വഴുക്കലും സ്വന്തം സുരക്ഷയും വിലയിരുത്തുക."
     } : {
       badTitle:"Don't tap", warnTitle:"Tap with caution", goodTitle:"Good time to tap",
       rNow:"It's raining right now.",
@@ -687,20 +773,22 @@
       rModerate:"Some chance of rain during the tapping window (",
       rModerate2:"%). Start early and try to finish before showers arrive.",
       rDry:"No significant rain in the last 24h.",
-      rHum:"Average humidity around "
+      rHum:"Average humidity around ",
+      rGuard:"Rain guards make this rain risk more tolerable — but still use your own judgement on slipperiness and safety underfoot."
     };
 
+    var th = thresholdsFor(rainGuarded);
     var reasons = [];
     var level = "good";
 
-    if (a.nowRaining || a.maxProb >= 65) {
+    if (a.nowRaining || a.maxProb >= th.badProb) {
       level = "bad";
       if (a.nowRaining) reasons.push(t.rNow);
-      if (a.maxProb >= 65) reasons.push(t.rWindow + a.maxProb + t.rWindow2);
-    } else if (a.rainLast24h >= 20) {
+      if (a.maxProb >= th.badProb) reasons.push(t.rWindow + a.maxProb + t.rWindow2);
+    } else if (a.rainLast24h >= th.warnRain) {
       level = "warn";
       reasons.push(t.rHeavy + a.rainLast24h.toFixed(1) + t.rHeavy2);
-    } else if (a.maxProb >= 30) {
+    } else if (a.maxProb >= th.warnProb) {
       level = "warn";
       reasons.push(t.rModerate + a.maxProb + t.rModerate2);
     } else {
@@ -708,20 +796,48 @@
     }
 
     if (a.avgHum !== null) reasons.push(t.rHum + a.avgHum + "%.");
+    if (rainGuarded && level !== "good") reasons.push(t.rGuard);
 
     var title = level === "bad" ? t.badTitle : (level === "warn" ? t.warnTitle : t.goodTitle);
     var icon = level === "bad" ? "🌧️" : (level === "warn" ? "⚠️" : "☀️");
     return {level: level, title: title, icon: icon, reasons: reasons};
   }
 
+  function renderForecastStrip(list, rainGuarded){
+    var stripEl = document.getElementById("forecastStrip");
+    if (!list || !list.length){ stripEl.innerHTML = ""; return; }
+    var lang = document.body.getAttribute("data-lang");
+    var weekdaysEn = ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
+    var weekdaysMl = ["ഞായർ","തിങ്കൾ","ചൊവ്വ","ബുധൻ","വ്യാഴം","വെള്ളി","ശനി"];
+    var th = thresholdsFor(rainGuarded);
+
+    stripEl.innerHTML = list.slice(0, 14).map(function(d){
+      var dateObj = new Date(d.date + "T00:00:00");
+      var wd = (lang === "ml" ? weekdaysMl : weekdaysEn)[dateObj.getDay()];
+      var dayNum = dateObj.getDate();
+      var level = "good";
+      if (d.maxProb >= th.badProb) level = "bad";
+      else if (d.rainSum >= th.warnRain || d.maxProb >= th.warnProb) level = "warn";
+      var icon = level === "bad" ? "🌧️" : (level === "warn" ? "⚠️" : "☀️");
+      var bg = level === "bad" ? "var(--bad-bg)" : (level === "warn" ? "var(--warn-bg)" : "var(--good-bg)");
+      var tempStr = (d.tempMax !== null && d.tempMin !== null) ? Math.round(d.tempMin) + "–" + Math.round(d.tempMax) + "°" : "";
+      return '<div style="flex:0 0 auto;min-width:76px;text-align:center;background:' + bg + ';border-radius:10px;padding:10px 8px;">' +
+        '<div style="font-size:0.72rem;color:var(--muted);text-transform:uppercase;">' + wd + ' ' + dayNum + '</div>' +
+        '<div style="font-size:1.3rem;margin:4px 0;">' + icon + '</div>' +
+        '<div style="font-size:0.72rem;color:var(--muted);">' + tempStr + '</div>' +
+      '</div>';
+    }).join("");
+  }
+
   async function checkAdvisory(){
     if (!currentLocation) return;
     var resultEl = document.getElementById("advisoryResult");
     var lang = document.body.getAttribute("data-lang");
+    var rainGuarded = document.getElementById("rainGuardToggle").checked;
     resultEl.innerHTML = "<p style='margin-top:16px;color:var(--muted)'>" + (lang==="ml" ? "കാലാവസ്ഥ പരിശോധിക്കുന്നു…" : "Checking weather…") + "</p>";
     try{
       var a = await fetchAdvisory(currentLocation);
-      var v = verdictFrom(a);
+      var v = verdictFrom(a, rainGuarded);
       var dict = STR[lang] || STR.en;
       var statsHtml =
         '<div class="stats-grid">' +
@@ -729,16 +845,25 @@
           (a.avgHum !== null ? '<div class="stat"><div class="val">' + a.avgHum + '%</div><div class="lbl">' + dict["advisory.hum"] + '</div></div>' : '') +
           '<div class="stat"><div class="val">' + a.rainLast24h.toFixed(1) + 'mm</div><div class="lbl">' + dict["advisory.rain24"] + '</div></div>' +
         '</div>';
+      var idealHtml =
+        '<p style="margin:12px 0 4px;font-size:0.78rem;color:var(--muted);text-transform:uppercase;letter-spacing:.03em;">' + dict["advisory.vsIdeal"] + '</p>' +
+        '<div class="stats-grid">' +
+          '<div class="stat"><div class="val">' + dict["advisory.idealTemp"] + '</div><div class="lbl">' + dict["advisory.temp"] + '</div></div>' +
+          '<div class="stat"><div class="val">' + dict["advisory.idealHum"] + '</div><div class="lbl">' + dict["advisory.hum"] + '</div></div>' +
+          '<div class="stat"><div class="val">' + dict["advisory.idealRain"] + '</div><div class="lbl">' + dict["advisory.rain24"] + '</div></div>' +
+        '</div>';
       resultEl.innerHTML =
         '<div class="verdict ' + v.level + '">' +
           '<div class="icon">' + v.icon + '</div>' +
           '<div><h3>' + v.title + '</h3>' +
           '<ul>' + v.reasons.map(function(r){return "<li>"+r+"</li>";}).join("") + '</ul>' +
           '</div>' +
-        '</div>' + statsHtml;
+        '</div>' + statsHtml + idealHtml;
+      renderForecastStrip(a.dailyForecast, rainGuarded);
     } catch(e){
       var msg = lang==="ml" ? "കാലാവസ്ഥ വിവരം ലഭ്യമായില്ല. വീണ്ടും ശ്രമിക്കുക." : "Couldn't fetch weather right now. Please try again.";
       resultEl.innerHTML = "<p style='margin-top:16px;color:var(--bad)'>" + msg + "</p>";
+      document.getElementById("forecastStrip").innerHTML = "";
     }
   }
 
@@ -948,6 +1073,28 @@
       '<p style="margin-top:10px;font-size:0.78rem;color:var(--muted);">' + dict["calc.disclaimer"] + '</p>';
   });
 
+  // ---------- Earnings estimator ----------
+  document.getElementById("earnForm").addEventListener("submit", function(e){
+    e.preventDefault();
+    var trees = parseFloat(document.getElementById("earnTrees").value);
+    var gramsPerTree = parseFloat(document.getElementById("earnYield").value);
+    var price = parseFloat(document.getElementById("earnPrice").value);
+    var resultEl = document.getElementById("earnResult");
+    var lang = document.body.getAttribute("data-lang");
+    var dict = STR[lang] || STR.en;
+    if (isNaN(trees) || isNaN(gramsPerTree) || trees <= 0 || gramsPerTree <= 0){
+      resultEl.innerHTML = "<p style='margin-top:14px;color:var(--bad)'>" + dict["earn.enterValid"] + "</p>";
+      return;
+    }
+    var totalKg = (trees * gramsPerTree) / 1000;
+    var totalValue = (!isNaN(price) && price > 0) ? totalKg * price : null;
+    resultEl.innerHTML =
+      '<div class="stats-grid">' +
+        '<div class="stat"><div class="val">' + totalKg.toFixed(2) + ' kg</div><div class="lbl">' + dict["earn.totalYield"] + '</div></div>' +
+        (totalValue !== null ? '<div class="stat"><div class="val">₹' + totalValue.toFixed(2) + '</div><div class="lbl">' + dict["earn.totalValue"] + '</div></div>' : '') +
+      '</div>';
+  });
+
   // ---------- init ----------
   document.getElementById("priceDate").value = fmtDate(new Date());
   applyLang(localStorage.getItem("rubbertap_lang") || "en");
@@ -957,6 +1104,12 @@
     var latestEntry = initialPrices.slice().sort(function(a,b){ return b.date.localeCompare(a.date); })[0];
     document.getElementById("calcPrice").value = Number(latestEntry.price).toFixed(2);
   }
+  var rainGuardToggle = document.getElementById("rainGuardToggle");
+  rainGuardToggle.checked = localStorage.getItem("rubbertap_rainguard") === "1";
+  rainGuardToggle.addEventListener("change", function(){
+    localStorage.setItem("rubbertap_rainguard", rainGuardToggle.checked ? "1" : "0");
+    checkAdvisory();
+  });
   renderLocationLabel();
   updateLocalLinks();
   updateWindyFrame();
