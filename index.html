@@ -1,0 +1,610 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RubberTap Kerala — Tapping Advisory &amp; Price Tracker</title>
+<meta name="description" content="Free daily tapping advisory and rubber price tracker for Kerala rubber tappers and estate owners.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%8C%B3%3C/text%3E%3C/svg%3E">
+<style>
+  :root{
+    --green-900:#1b3a2b;
+    --green-800:#204a34;
+    --green-700:#2e6b47;
+    --green-600:#3d8a5c;
+    --green-100:#e7f3ea;
+    --brown-700:#6b4423;
+    --amber-600:#c17f2a;
+    --bg:#f7f6f1;
+    --card:#ffffff;
+    --text:#20291f;
+    --muted:#5c6a5a;
+    --border:#dfe3da;
+    --good:#2e7d32;
+    --good-bg:#e8f5e9;
+    --warn:#b8860b;
+    --warn-bg:#fff8e1;
+    --bad:#c62828;
+    --bad-bg:#fdecea;
+    --radius:14px;
+    --shadow:0 2px 10px rgba(27,58,43,0.08);
+  }
+  @media (prefers-color-scheme: dark){
+    :root{
+      --bg:#12180f;
+      --card:#1b241a;
+      --text:#eef1ea;
+      --muted:#a7b3a2;
+      --border:#2b362a;
+      --green-100:#1c2e22;
+      --good-bg:#173a22;
+      --warn-bg:#3a3016;
+      --bad-bg:#3a1c1c;
+      --shadow:0 2px 14px rgba(0,0,0,0.4);
+    }
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    margin:0;
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    background:var(--bg);
+    color:var(--text);
+    line-height:1.5;
+  }
+  a{color:var(--green-700);}
+  @media (prefers-color-scheme: dark){ a{ color:#7bc496; } }
+  .wrap{max-width:880px;margin:0 auto;padding:0 18px;}
+  header.site{
+    background:linear-gradient(135deg,var(--green-900),var(--green-700));
+    color:#fff;
+    padding:16px 0;
+    position:sticky;
+    top:0;
+    z-index:10;
+    box-shadow:var(--shadow);
+  }
+  header.site .wrap{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;}
+  .brand{display:flex;align-items:center;gap:10px;font-weight:700;font-size:1.15rem;}
+  .brand .emoji{font-size:1.6rem;}
+  nav.tabs{display:flex;gap:6px;flex-wrap:wrap;}
+  nav.tabs button{
+    background:rgba(255,255,255,0.12);
+    border:1px solid rgba(255,255,255,0.25);
+    color:#fff;
+    padding:8px 14px;
+    border-radius:999px;
+    font-size:0.9rem;
+    cursor:pointer;
+  }
+  nav.tabs button.lang{background:#fff;color:var(--green-800);font-weight:600;}
+  .hero{padding:36px 0 26px;text-align:center;}
+  .hero h1{font-size:1.7rem;margin:0 0 8px;color:var(--green-800);}
+  @media (prefers-color-scheme:dark){.hero h1{color:#a9dcb9;}}
+  .hero p{color:var(--muted);max-width:560px;margin:0 auto;}
+  section{padding:28px 0;}
+  section h2{font-size:1.25rem;color:var(--green-800);margin:0 0 4px;}
+  @media (prefers-color-scheme:dark){section h2{color:#a9dcb9;}}
+  section .lead{color:var(--muted);margin:0 0 18px;font-size:0.95rem;}
+  .card{
+    background:var(--card);
+    border:1px solid var(--border);
+    border-radius:var(--radius);
+    padding:20px;
+    box-shadow:var(--shadow);
+  }
+  .row{display:flex;gap:12px;flex-wrap:wrap;align-items:flex-end;}
+  label{display:block;font-size:0.85rem;color:var(--muted);margin-bottom:4px;}
+  select, input[type=date], input[type=number]{
+    font-size:1rem;
+    padding:10px 12px;
+    border-radius:10px;
+    border:1px solid var(--border);
+    background:var(--bg);
+    color:var(--text);
+    width:100%;
+  }
+  .field{flex:1;min-width:150px;}
+  button.primary{
+    background:var(--green-700);
+    color:#fff;
+    border:none;
+    padding:11px 20px;
+    border-radius:10px;
+    font-size:1rem;
+    font-weight:600;
+    cursor:pointer;
+  }
+  button.primary:hover{background:var(--green-800);}
+  button.ghost{
+    background:transparent;
+    border:1px solid var(--border);
+    color:var(--muted);
+    padding:8px 14px;
+    border-radius:10px;
+    cursor:pointer;
+    font-size:0.85rem;
+  }
+  .verdict{
+    margin-top:18px;
+    border-radius:var(--radius);
+    padding:18px;
+    display:flex;
+    gap:14px;
+    align-items:flex-start;
+  }
+  .verdict.good{background:var(--good-bg);}
+  .verdict.warn{background:var(--warn-bg);}
+  .verdict.bad{background:var(--bad-bg);}
+  .verdict .icon{font-size:2rem;line-height:1;}
+  .verdict h3{margin:0 0 6px;font-size:1.15rem;}
+  .verdict.good h3{color:var(--good);}
+  .verdict.warn h3{color:var(--warn);}
+  .verdict.bad h3{color:var(--bad);}
+  .verdict ul{margin:8px 0 0;padding-left:18px;font-size:0.92rem;color:var(--text);}
+  .stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:10px;margin-top:16px;}
+  .stat{background:var(--green-100);border-radius:10px;padding:10px 12px;text-align:center;}
+  .stat .val{font-size:1.15rem;font-weight:700;color:var(--green-800);}
+  @media (prefers-color-scheme:dark){.stat .val{color:#a9dcb9;}}
+  .stat .lbl{font-size:0.72rem;color:var(--muted);text-transform:uppercase;letter-spacing:.03em;}
+  table{width:100%;border-collapse:collapse;margin-top:14px;font-size:0.92rem;}
+  th,td{text-align:left;padding:8px 6px;border-bottom:1px solid var(--border);}
+  th{color:var(--muted);font-weight:600;font-size:0.78rem;text-transform:uppercase;}
+  td.num{text-align:right;font-variant-numeric:tabular-nums;}
+  .del-btn{background:none;border:none;color:var(--bad);cursor:pointer;font-size:0.85rem;}
+  .empty{color:var(--muted);font-size:0.9rem;padding:10px 0;}
+  .tips-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px;}
+  .tip{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:16px;box-shadow:var(--shadow);}
+  .tip .icon{font-size:1.5rem;}
+  .tip h3{font-size:1rem;margin:8px 0 6px;color:var(--green-800);}
+  @media (prefers-color-scheme:dark){.tip h3{color:#a9dcb9;}}
+  .tip p{margin:0;font-size:0.88rem;color:var(--muted);}
+  footer{padding:26px 0 40px;color:var(--muted);font-size:0.82rem;border-top:1px solid var(--border);margin-top:20px;}
+  footer a{color:var(--muted);text-decoration:underline;}
+  .badge-note{display:inline-block;background:var(--green-100);color:var(--green-800);border-radius:999px;padding:3px 10px;font-size:0.75rem;margin-left:6px;}
+  @media (prefers-color-scheme:dark){.badge-note{color:#a9dcb9;}}
+  .hidden{display:none !important;}
+</style>
+</head>
+<body data-lang="en">
+
+<header class="site">
+  <div class="wrap">
+    <div class="brand"><span class="emoji">🌳</span> <span>RubberTap Kerala</span></div>
+    <nav class="tabs">
+      <button type="button" onclick="document.getElementById('advisory').scrollIntoView()" data-i18n="nav.advisory">Advisory</button>
+      <button type="button" onclick="document.getElementById('prices').scrollIntoView()" data-i18n="nav.prices">Prices</button>
+      <button type="button" onclick="document.getElementById('tips').scrollIntoView()" data-i18n="nav.tips">Tips</button>
+      <button type="button" class="lang" id="langToggle">മലയാളം</button>
+    </nav>
+  </div>
+</header>
+
+<div class="hero wrap">
+  <h1 data-i18n="hero.title">Should you tap today?</h1>
+  <p data-i18n="hero.subtitle">A free, no-login tool for Kerala's rubber tappers and estate owners — a quick weather-based tapping call, and a simple place to log daily sheet prices.</p>
+</div>
+
+<main class="wrap">
+
+  <section id="advisory">
+    <h2 data-i18n="advisory.title">Tapping advisory</h2>
+    <p class="lead" data-i18n="advisory.lead">Pick your area. We check rain over the last day and the early-morning tapping window (4–10 AM) using live weather data.</p>
+    <div class="card">
+      <div class="row">
+        <div class="field">
+          <label for="district" data-i18n="advisory.district">Area</label>
+          <select id="district"></select>
+        </div>
+        <button class="primary" id="checkBtn" type="button" data-i18n="advisory.check">Check conditions</button>
+      </div>
+      <div id="advisoryResult"></div>
+    </div>
+  </section>
+
+  <section id="prices">
+    <h2 data-i18n="prices.title">Price log</h2>
+    <p class="lead" data-i18n="prices.lead">Log your daily RSS4 / sheet rubber price (₹ per kg) to track your own local trend. Saved only in this browser — nothing is sent anywhere.</p>
+    <div class="card">
+      <form id="priceForm" class="row">
+        <div class="field">
+          <label for="priceDate" data-i18n="prices.date">Date</label>
+          <input type="date" id="priceDate" required>
+        </div>
+        <div class="field">
+          <label for="priceValue" data-i18n="prices.value">Price (₹/kg)</label>
+          <input type="number" id="priceValue" min="0" step="0.5" required placeholder="e.g. 165">
+        </div>
+        <button class="primary" type="submit" data-i18n="prices.add">Add entry</button>
+      </form>
+
+      <div class="stats-grid" id="priceStats"></div>
+
+      <table id="priceTable">
+        <thead>
+          <tr>
+            <th data-i18n="prices.thDate">Date</th>
+            <th style="text-align:right" data-i18n="prices.thPrice">₹/kg</th>
+            <th style="text-align:right" data-i18n="prices.thChange">Change</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody id="priceTbody"></tbody>
+      </table>
+      <div class="empty hidden" id="priceEmpty" data-i18n="prices.empty">No entries yet — add today's price above.</div>
+      <div style="margin-top:14px;">
+        <button class="ghost" id="clearPrices" type="button" data-i18n="prices.clear">Clear all entries</button>
+        <span class="badge-note" data-i18n="prices.official">Cross-check with your local Rubber Marketing Society / Rubber Board bulletin for the official rate.</span>
+      </div>
+    </div>
+  </section>
+
+  <section id="tips">
+    <h2 data-i18n="tips.title">Good practice tips</h2>
+    <p class="lead" data-i18n="tips.lead">General guidance — always follow your estate/Rubber Board extension officer's advice for your specific trees and soil.</p>
+    <div class="tips-grid">
+      <div class="tip">
+        <div class="icon">🌅</div>
+        <h3 data-i18n="tip1.h">Tap early, before the bark dries</h3>
+        <p data-i18n="tip1.p">Latex flows best in cool, humid pre-dawn hours. Aim to finish tapping before direct sun hits the panel.</p>
+      </div>
+      <div class="tip">
+        <div class="icon">🌧️</div>
+        <h3 data-i18n="tip2.h">Never tap on wet bark</h3>
+        <p data-i18n="tip2.p">Tapping a rain-wet panel dilutes latex and invites bark disease. Wait until the panel is dry, even if it means tapping later.</p>
+      </div>
+      <div class="tip">
+        <div class="icon">🍂</div>
+        <h3 data-i18n="tip3.h">Watch for monsoon disease</h3>
+        <p data-i18n="tip3.p">Heavy, sustained rain raises the risk of Abnormal Leaf Fall and Pink disease. Consider rain-guarding panels and check for early symptoms.</p>
+      </div>
+      <div class="tip">
+        <div class="icon">🔪</div>
+        <h3 data-i18n="tip4.h">Keep the tapping cut shallow</h3>
+        <p data-i18n="tip4.p">Cutting too deep wounds the cambium and shortens the tree's tapping life. A consistent, shallow cut keeps panels productive for years.</p>
+      </div>
+      <div class="tip">
+        <div class="icon">📅</div>
+        <h3 data-i18n="tip5.h">Rest days matter</h3>
+        <p data-i18n="tip5.p">Standard d/2 or d/3 tapping systems give the tree recovery time. Skipping rest days for short-term yield wears trees out faster.</p>
+      </div>
+      <div class="tip">
+        <div class="icon">🥽</div>
+        <h3 data-i18n="tip6.h">Tap safely</h3>
+        <p data-i18n="tip6.p">Early-morning tapping means low light — carry a headlamp, wear closed footwear, and be mindful of snakes and slippery slopes.</p>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  <div class="wrap">
+    <p data-i18n="footer.disclaimer">The tapping advisory is a rule-of-thumb estimate from public weather forecasts, not a substitute for on-the-ground judgement or official Rubber Board guidance. Price entries are stored only in your browser's local storage.</p>
+    <p data-i18n="footer.credit">Weather data: Open-Meteo. Built as an independent, free community tool — no account, no tracking.</p>
+  </div>
+</footer>
+
+<script>
+(function(){
+  "use strict";
+
+  // ---------- i18n ----------
+  var STR = {
+    en: {
+      "nav.advisory":"Advisory","nav.prices":"Prices","nav.tips":"Tips",
+      "hero.title":"Should you tap today?",
+      "hero.subtitle":"A free, no-login tool for Kerala's rubber tappers and estate owners — a quick weather-based tapping call, and a simple place to log daily sheet prices.",
+      "advisory.title":"Tapping advisory",
+      "advisory.lead":"Pick your area. We check rain over the last day and the early-morning tapping window (4–10 AM) using live weather data.",
+      "advisory.district":"Area","advisory.check":"Check conditions",
+      "prices.title":"Price log",
+      "prices.lead":"Log your daily RSS4 / sheet rubber price (₹ per kg) to track your own local trend. Saved only in this browser — nothing is sent anywhere.",
+      "prices.date":"Date","prices.value":"Price (₹/kg)","prices.add":"Add entry",
+      "prices.thDate":"Date","prices.thPrice":"₹/kg","prices.thChange":"Change",
+      "prices.empty":"No entries yet — add today's price above.",
+      "prices.clear":"Clear all entries",
+      "prices.official":"Cross-check with your local Rubber Marketing Society / Rubber Board bulletin for the official rate.",
+      "tips.title":"Good practice tips",
+      "tips.lead":"General guidance — always follow your estate/Rubber Board extension officer's advice for your specific trees and soil.",
+      "tip1.h":"Tap early, before the bark dries","tip1.p":"Latex flows best in cool, humid pre-dawn hours. Aim to finish tapping before direct sun hits the panel.",
+      "tip2.h":"Never tap on wet bark","tip2.p":"Tapping a rain-wet panel dilutes latex and invites bark disease. Wait until the panel is dry, even if it means tapping later.",
+      "tip3.h":"Watch for monsoon disease","tip3.p":"Heavy, sustained rain raises the risk of Abnormal Leaf Fall and Pink disease. Consider rain-guarding panels and check for early symptoms.",
+      "tip4.h":"Keep the tapping cut shallow","tip4.p":"Cutting too deep wounds the cambium and shortens the tree's tapping life. A consistent, shallow cut keeps panels productive for years.",
+      "tip5.h":"Rest days matter","tip5.p":"Standard d/2 or d/3 tapping systems give the tree recovery time. Skipping rest days for short-term yield wears trees out faster.",
+      "tip6.h":"Tap safely","tip6.p":"Early-morning tapping means low light — carry a headlamp, wear closed footwear, and be mindful of snakes and slippery slopes.",
+      "footer.disclaimer":"The tapping advisory is a rule-of-thumb estimate from public weather forecasts, not a substitute for on-the-ground judgement or official Rubber Board guidance. Price entries are stored only in your browser's local storage.",
+      "footer.credit":"Weather data: Open-Meteo. Built as an independent, free community tool — no account, no tracking."
+    },
+    ml: {
+      "nav.advisory":"ഉപദേശം","nav.prices":"വില","nav.tips":"നിർദ്ദേശങ്ങൾ",
+      "hero.title":"ഇന്ന് ടാപ്പിംഗ് നടത്താമോ?",
+      "hero.subtitle":"കേരളത്തിലെ റബ്ബർ ടാപ്പർമാർക്കും എസ്റ്റേറ്റ് ഉടമകൾക്കും വേണ്ടിയുള്ള സൗജന്യ ഉപകരണം — കാലാവസ്ഥ അടിസ്ഥാനമാക്കിയുള്ള ടാപ്പിംഗ് നിർദ്ദേശവും ദിവസേനയുള്ള റബ്ബർ വില രേഖപ്പെടുത്താനുള്ള ലളിതമായ സൗകര്യവും.",
+      "advisory.title":"ടാപ്പിംഗ് ഉപദേശം",
+      "advisory.lead":"നിങ്ങളുടെ പ്രദേശം തിരഞ്ഞെടുക്കുക. കഴിഞ്ഞ 24 മണിക്കൂറിലെ മഴയും പുലർച്ചെ 4–10 മണി വരെയുള്ള ടാപ്പിംഗ് സമയത്തെ കാലാവസ്ഥയും ഞങ്ങൾ പരിശോധിക്കും.",
+      "advisory.district":"പ്രദേശം","advisory.check":"കാലാവസ്ഥ പരിശോധിക്കുക",
+      "prices.title":"വില രേഖ",
+      "prices.lead":"നിങ്ങളുടെ പ്രദേശത്തെ പ്രവണത അറിയാൻ ദിവസേനയുള്ള RSS4 / ഷീറ്റ് റബ്ബർ വില (₹/കിലോ) രേഖപ്പെടുത്തുക. ഈ ബ്രൗസറിൽ മാത്രം സൂക്ഷിക്കുന്നു — എവിടേക്കും അയക്കുന്നില്ല.",
+      "prices.date":"തീയതി","prices.value":"വില (₹/കിലോ)","prices.add":"ചേർക്കുക",
+      "prices.thDate":"തീയതി","prices.thPrice":"₹/കിലോ","prices.thChange":"മാറ്റം",
+      "prices.empty":"ഇതുവരെ വിവരങ്ങളൊന്നും ചേർത്തിട്ടില്ല — ഇന്നത്തെ വില മുകളിൽ ചേർക്കുക.",
+      "prices.clear":"എല്ലാം മായ്ക്കുക",
+      "prices.official":"ഔദ്യോഗിക നിരക്കിന് നിങ്ങളുടെ റബ്ബർ മാർക്കറ്റിംഗ് സൊസൈറ്റി / റബ്ബർ ബോർഡ് ബുള്ളറ്റിൻ പരിശോധിക്കുക.",
+      "tips.title":"നല്ല രീതികൾ",
+      "tips.lead":"പൊതു നിർദ്ദേശങ്ങൾ മാത്രം — നിങ്ങളുടെ എസ്റ്റേറ്റ്/റബ്ബർ ബോർഡ് ഉദ്യോഗസ്ഥന്റെ നിർദ്ദേശം എപ്പോഴും പിന്തുടരുക.",
+      "tip1.h":"തൊലി ഉണങ്ങുന്നതിന് മുൻപ് നേരത്തെ ടാപ്പ് ചെയ്യുക","tip1.p":"തണുത്ത, ഈർപ്പമുള്ള പുലർച്ചെ സമയങ്ങളിൽ പാൽ നന്നായി ഒഴുകും. വെയിൽ പാനലിൽ വീഴുന്നതിന് മുൻപ് ടാപ്പിംഗ് പൂർത്തിയാക്കുക.",
+      "tip2.h":"നനഞ്ഞ തൊലിയിൽ ടാപ്പ് ചെയ്യരുത്","tip2.p":"മഴ നനഞ്ഞ പാനൽ ടാപ്പ് ചെയ്താൽ പാൽ നേർപ്പിക്കുകയും രോഗസാധ്യത കൂട്ടുകയും ചെയ്യും. പാനൽ ഉണങ്ങുന്നത് വരെ കാത്തിരിക്കുക.",
+      "tip3.h":"മഴക്കാല രോഗങ്ങൾ ശ്രദ്ധിക്കുക","tip3.p":"തുടർച്ചയായ കനത്ത മഴ ഇല കൊഴിച്ചിൽ, പിങ്ക് രോഗം എന്നിവയുടെ സാധ്യത കൂട്ടുന്നു. റെയിൻ ഗാർഡിംഗ് പരിഗണിക്കുക.",
+      "tip4.h":"ടാപ്പിംഗ് മുറിവ് ആഴം കുറച്ച് വയ്ക്കുക","tip4.p":"അമിതമായി ആഴത്തിൽ മുറിക്കുന്നത് മരത്തിന് ദോഷം ചെയ്യും. സ്ഥിരമായ, ആഴം കുറഞ്ഞ മുറിവ് പാനലിന്റെ ആയുസ്സ് കൂട്ടും.",
+      "tip5.h":"വിശ്രമ ദിവസങ്ങൾ പ്രധാനമാണ്","tip5.p":"d/2 അല്ലെങ്കിൽ d/3 ടാപ്പിംഗ് സമ്പ്രദായങ്ങൾ മരത്തിന് വിശ്രമം നൽകുന്നു. ഇത് ഒഴിവാക്കുന്നത് മരത്തെ വേഗം ക്ഷീണിപ്പിക്കും.",
+      "tip6.h":"സുരക്ഷിതമായി ടാപ്പ് ചെയ്യുക","tip6.p":"പുലർച്ചെ വെളിച്ചം കുറവായിരിക്കും — ഹെഡ്‌ലാമ്പ്, മുഴുവൻ കാൽ മൂടുന്ന ചെരിപ്പ് എന്നിവ ഉപയോഗിക്കുക, പാമ്പുകളെയും വഴുക്കലിനെയും ശ്രദ്ധിക്കുക.",
+      "footer.disclaimer":"ടാപ്പിംഗ് ഉപദേശം പൊതു കാലാവസ്ഥാ പ്രവചനത്തെ അടിസ്ഥാനമാക്കിയുള്ള ഒരു ഏകദേശ കണക്കാണ് — ഇത് നേരിട്ടുള്ള നിരീക്ഷണത്തിനോ ഔദ്യോഗിക റബ്ബർ ബോർഡ് നിർദ്ദേശത്തിനോ പകരമല്ല. വില വിവരങ്ങൾ നിങ്ങളുടെ ബ്രൗസറിൽ മാത്രമേ സൂക്ഷിക്കുന്നുള്ളൂ.",
+      "footer.credit":"കാലാവസ്ഥാ വിവരം: Open-Meteo. ഇത് ഒരു സ്വതന്ത്ര, സൗജന്യ കമ്മ്യൂണിറ്റി ഉപകരണമാണ് — അക്കൗണ്ട് വേണ്ട, ട്രാക്കിംഗ് ഇല്ല."
+    }
+  };
+
+  function applyLang(lang){
+    document.body.setAttribute("data-lang", lang);
+    document.documentElement.setAttribute("lang", lang === "ml" ? "ml" : "en");
+    var dict = STR[lang] || STR.en;
+    document.querySelectorAll("[data-i18n]").forEach(function(el){
+      var key = el.getAttribute("data-i18n");
+      if (dict[key]) el.textContent = dict[key];
+    });
+    document.getElementById("langToggle").textContent = lang === "ml" ? "English" : "മലയാളം";
+    localStorage.setItem("rubbertap_lang", lang);
+    renderPrices(); // labels inside change/date column depend on locale-ish formatting
+  }
+
+  document.getElementById("langToggle").addEventListener("click", function(){
+    var cur = document.body.getAttribute("data-lang");
+    applyLang(cur === "ml" ? "en" : "ml");
+  });
+
+  // ---------- Districts ----------
+  var DISTRICTS = [
+    {id:"kottayam", en:"Kottayam", ml:"കോട്ടയം", lat:9.5916, lon:76.5222},
+    {id:"ernakulam", en:"Ernakulam", ml:"എറണാകുളം", lat:9.9816, lon:76.2999},
+    {id:"pathanamthitta", en:"Pathanamthitta", ml:"പത്തനംതിട്ട", lat:9.2648, lon:76.7870},
+    {id:"kollam", en:"Kollam", ml:"കൊല്ലം", lat:8.8932, lon:76.6141},
+    {id:"idukki", en:"Idukki (Thodupuzha)", ml:"ഇടുക്കി (തൊടുപുഴ)", lat:9.8933, lon:76.7167},
+    {id:"thrissur", en:"Thrissur", ml:"തൃശ്ശൂർ", lat:10.5276, lon:76.2144},
+    {id:"kozhikode", en:"Kozhikode", ml:"കോഴിക്കോട്", lat:11.2588, lon:75.7804},
+    {id:"kannur", en:"Kannur", ml:"കണ്ണൂർ", lat:11.8745, lon:75.3704},
+    {id:"malappuram", en:"Malappuram", ml:"മലപ്പുറം", lat:11.0510, lon:76.0711},
+    {id:"kasaragod", en:"Kasaragod", ml:"കാസർഗോഡ്", lat:12.4996, lon:74.9869}
+  ];
+
+  var districtSelect = document.getElementById("district");
+  DISTRICTS.forEach(function(d){
+    var opt = document.createElement("option");
+    opt.value = d.id;
+    opt.textContent = d.en;
+    districtSelect.appendChild(opt);
+  });
+  var savedDistrict = localStorage.getItem("rubbertap_district");
+  if (savedDistrict && DISTRICTS.some(function(d){return d.id === savedDistrict;})) {
+    districtSelect.value = savedDistrict;
+  }
+
+  // ---------- Advisory ----------
+  function fmtDate(d){
+    var y = d.getFullYear(), m = ("0"+(d.getMonth()+1)).slice(-2), day = ("0"+d.getDate()).slice(-2);
+    return y+"-"+m+"-"+day;
+  }
+
+  async function fetchAdvisory(district){
+    var url = "https://api.open-meteo.com/v1/forecast"
+      + "?latitude=" + district.lat
+      + "&longitude=" + district.lon
+      + "&hourly=precipitation_probability,precipitation,relative_humidity_2m"
+      + "&daily=precipitation_sum"
+      + "&past_days=1&forecast_days=2"
+      + "&timezone=Asia%2FKolkata";
+    var res = await fetch(url);
+    if (!res.ok) throw new Error("weather request failed");
+    var data = await res.json();
+
+    var now = new Date();
+    var todayStr = fmtDate(now);
+    var tomorrow = new Date(now.getTime() + 24*3600*1000);
+    var tomorrowStr = fmtDate(tomorrow);
+    var yesterday = new Date(now.getTime() - 24*3600*1000);
+    var yesterdayStr = fmtDate(yesterday);
+
+    // rain in the last 24h (yesterday's daily total)
+    var rainLast24h = 0;
+    var di = data.daily.time.indexOf(yesterdayStr);
+    if (di >= 0) rainLast24h = data.daily.precipitation_sum[di] || 0;
+
+    // tapping window: next occurrence of 04:00-10:00 local
+    var windowDateStr = now.getHours() < 10 ? todayStr : tomorrowStr;
+    var probs = [], rains = [], hums = [];
+    for (var i = 0; i < data.hourly.time.length; i++){
+      var t = data.hourly.time[i]; // "YYYY-MM-DDTHH:00"
+      var datePart = t.slice(0,10);
+      var hour = parseInt(t.slice(11,13), 10);
+      if (datePart === windowDateStr && hour >= 4 && hour <= 10){
+        probs.push(data.hourly.precipitation_probability[i]);
+        rains.push(data.hourly.precipitation[i]);
+        hums.push(data.hourly.relative_humidity_2m[i]);
+      }
+    }
+    var maxProb = probs.length ? Math.max.apply(null, probs) : 0;
+    var sumRain = rains.reduce(function(a,b){return a+(b||0);}, 0);
+    var avgHum = hums.length ? Math.round(hums.reduce(function(a,b){return a+b;},0)/hums.length) : null;
+
+    // is it raining right now?
+    var nowRaining = false;
+    var nowIdx = data.hourly.time.indexOf(fmtDate(now)+"T"+("0"+now.getHours()).slice(-2)+":00");
+    if (nowIdx >= 0) nowRaining = (data.hourly.precipitation[nowIdx] || 0) > 0.1;
+
+    return {rainLast24h: rainLast24h, maxProb: maxProb, sumRain: sumRain, avgHum: avgHum, nowRaining: nowRaining};
+  }
+
+  function verdictFrom(a){
+    var lang = document.body.getAttribute("data-lang");
+    var t = lang === "ml" ? {
+      badTitle:"ടാപ്പ് ചെയ്യരുത്", warnTitle:"ജാഗ്രതയോടെ ടാപ്പ് ചെയ്യാം", goodTitle:"ടാപ്പിംഗിന് നല്ല സമയം",
+      rNow:"ഇപ്പോൾ മഴ പെയ്യുന്നു.",
+      rWindow:"രാവിലെ ടാപ്പിംഗ് സമയത്ത് മഴയ്ക്ക് സാധ്യത കൂടുതലാണ് (" ,
+      rWindow2:"% സാധ്യത).",
+      rHeavy:"കഴിഞ്ഞ 24 മണിക്കൂറിൽ കനത്ത മഴ പെയ്തു (" ,
+      rHeavy2:"മി.മീ). പാൽ നേർപ്പിക്കപ്പെടാം, തൊലി ഉണങ്ങിയെന്ന് ഉറപ്പാക്കുക.",
+      rModerate:"നേരിയ മഴ സാധ്യതയുണ്ട് (",
+      rModerate2:"%). നേരത്തെ തുടങ്ങി മഴയ്ക്ക് മുൻപ് പൂർത്തിയാക്കുക.",
+      rDry:"കഴിഞ്ഞ 24 മണിക്കൂറിൽ കാര്യമായ മഴയില്ല.",
+      rHum:"ശരാശരി ആർദ്രത ഏകദേശം "
+    } : {
+      badTitle:"Don't tap", warnTitle:"Tap with caution", goodTitle:"Good time to tap",
+      rNow:"It's raining right now.",
+      rWindow:"High chance of rain during the early-morning tapping window (",
+      rWindow2:"% chance).",
+      rHeavy:"Heavy rain in the last 24h (",
+      rHeavy2:"mm). Latex may be diluted — make sure bark is fully dry before tapping.",
+      rModerate:"Some chance of rain during the tapping window (",
+      rModerate2:"%). Start early and try to finish before showers arrive.",
+      rDry:"No significant rain in the last 24h.",
+      rHum:"Average humidity around "
+    };
+
+    var reasons = [];
+    var level = "good";
+
+    if (a.nowRaining || a.maxProb >= 65) {
+      level = "bad";
+      if (a.nowRaining) reasons.push(t.rNow);
+      if (a.maxProb >= 65) reasons.push(t.rWindow + a.maxProb + t.rWindow2);
+    } else if (a.rainLast24h >= 20) {
+      level = "warn";
+      reasons.push(t.rHeavy + a.rainLast24h.toFixed(1) + t.rHeavy2);
+    } else if (a.maxProb >= 30) {
+      level = "warn";
+      reasons.push(t.rModerate + a.maxProb + t.rModerate2);
+    } else {
+      reasons.push(t.rDry);
+    }
+
+    if (a.avgHum !== null) reasons.push(t.rHum + a.avgHum + "%.");
+
+    var title = level === "bad" ? t.badTitle : (level === "warn" ? t.warnTitle : t.goodTitle);
+    var icon = level === "bad" ? "🌧️" : (level === "warn" ? "⚠️" : "☀️");
+    return {level: level, title: title, icon: icon, reasons: reasons};
+  }
+
+  async function checkAdvisory(){
+    var id = districtSelect.value;
+    localStorage.setItem("rubbertap_district", id);
+    var district = DISTRICTS.filter(function(d){return d.id===id;})[0];
+    var resultEl = document.getElementById("advisoryResult");
+    var lang = document.body.getAttribute("data-lang");
+    resultEl.innerHTML = "<p style='margin-top:16px;color:var(--muted)'>" + (lang==="ml" ? "കാലാവസ്ഥ പരിശോധിക്കുന്നു…" : "Checking weather…") + "</p>";
+    try{
+      var a = await fetchAdvisory(district);
+      var v = verdictFrom(a);
+      resultEl.innerHTML =
+        '<div class="verdict ' + v.level + '">' +
+          '<div class="icon">' + v.icon + '</div>' +
+          '<div><h3>' + v.title + '</h3>' +
+          '<ul>' + v.reasons.map(function(r){return "<li>"+r+"</li>";}).join("") + '</ul>' +
+          '</div>' +
+        '</div>';
+    } catch(e){
+      var msg = lang==="ml" ? "കാലാവസ്ഥ വിവരം ലഭ്യമായില്ല. വീണ്ടും ശ്രമിക്കുക." : "Couldn't fetch weather right now. Please try again.";
+      resultEl.innerHTML = "<p style='margin-top:16px;color:var(--bad)'>" + msg + "</p>";
+    }
+  }
+
+  document.getElementById("checkBtn").addEventListener("click", checkAdvisory);
+
+  // ---------- Price log ----------
+  var PRICE_KEY = "rubbertap_prices";
+
+  function loadPrices(){
+    try { return JSON.parse(localStorage.getItem(PRICE_KEY)) || []; }
+    catch(e){ return []; }
+  }
+  function savePrices(list){ localStorage.setItem(PRICE_KEY, JSON.stringify(list)); }
+
+  function renderPrices(){
+    var list = loadPrices().slice().sort(function(a,b){ return b.date.localeCompare(a.date); });
+    var tbody = document.getElementById("priceTbody");
+    var emptyEl = document.getElementById("priceEmpty");
+    var statsEl = document.getElementById("priceStats");
+    tbody.innerHTML = "";
+
+    if (list.length === 0){
+      emptyEl.classList.remove("hidden");
+      statsEl.innerHTML = "";
+      return;
+    }
+    emptyEl.classList.add("hidden");
+
+    list.forEach(function(entry, idx){
+      var prev = list[idx+1]; // next in sorted-desc order = chronologically earlier
+      var change = prev ? (entry.price - prev.price) : null;
+      var changeStr = "—";
+      if (change !== null){
+        var arrow = change > 0 ? "▲" : (change < 0 ? "▼" : "→");
+        changeStr = arrow + " " + Math.abs(change).toFixed(2);
+      }
+      var tr = document.createElement("tr");
+      tr.innerHTML =
+        "<td>" + entry.date + "</td>" +
+        "<td class='num'>" + Number(entry.price).toFixed(2) + "</td>" +
+        "<td class='num'>" + changeStr + "</td>" +
+        "<td><button class='del-btn' data-date='" + entry.date + "'>✕</button></td>";
+      tbody.appendChild(tr);
+    });
+
+    tbody.querySelectorAll(".del-btn").forEach(function(btn){
+      btn.addEventListener("click", function(){
+        var date = btn.getAttribute("data-date");
+        var updated = loadPrices().filter(function(e){ return e.date !== date; });
+        savePrices(updated);
+        renderPrices();
+      });
+    });
+
+    var last14 = list.slice(0, 14);
+    var avg = last14.reduce(function(a,e){return a+Number(e.price);},0) / last14.length;
+    var lang = document.body.getAttribute("data-lang");
+    var labels = lang === "ml"
+      ? {latest:"ഏറ്റവും പുതിയത്", avg:"14 ദിന ശരാശരി", entries:"ആകെ എൻട്രികൾ"}
+      : {latest:"Latest", avg:"14-day avg", entries:"Entries"};
+    statsEl.innerHTML =
+      '<div class="stat"><div class="val">₹' + Number(list[0].price).toFixed(2) + '</div><div class="lbl">' + labels.latest + '</div></div>' +
+      '<div class="stat"><div class="val">₹' + avg.toFixed(2) + '</div><div class="lbl">' + labels.avg + '</div></div>' +
+      '<div class="stat"><div class="val">' + list.length + '</div><div class="lbl">' + labels.entries + '</div></div>';
+  }
+
+  document.getElementById("priceForm").addEventListener("submit", function(e){
+    e.preventDefault();
+    var date = document.getElementById("priceDate").value;
+    var price = parseFloat(document.getElementById("priceValue").value);
+    if (!date || isNaN(price)) return;
+    var list = loadPrices().filter(function(entry){ return entry.date !== date; });
+    list.push({date: date, price: price});
+    savePrices(list);
+    document.getElementById("priceValue").value = "";
+    renderPrices();
+  });
+
+  document.getElementById("clearPrices").addEventListener("click", function(){
+    var lang = document.body.getAttribute("data-lang");
+    var msg = lang==="ml" ? "എല്ലാ വില വിവരങ്ങളും ഇല്ലാതാക്കണോ?" : "Delete all saved price entries?";
+    if (confirm(msg)){
+      savePrices([]);
+      renderPrices();
+    }
+  });
+
+  // ---------- init ----------
+  document.getElementById("priceDate").value = fmtDate(new Date());
+  applyLang(localStorage.getItem("rubbertap_lang") || "en");
+  renderPrices();
+  checkAdvisory();
+})();
+</script>
+</body>
+</html>
