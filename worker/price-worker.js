@@ -94,7 +94,8 @@ export default {
       }
     }
 
-    const response = json(result.data, 200, cors);
+    const responseData = aiError ? Object.assign({}, result.data, { aiError }) : result.data;
+    const response = json(responseData, 200, cors);
     ctx.waitUntil(cache.put(cacheKey, response.clone(), { expirationTtl: CACHE_SECONDS }));
     return response;
   },
