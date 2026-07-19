@@ -69,9 +69,12 @@ async function tryExtract(sourceUrl) {
 
     const match = searchText.match(PRICE_PATTERN);
     if (!match) {
+      // TEMP DEBUG: dump much more text than usual so we can see whether
+      // the domestic price appears anywhere as text at all, in a different
+      // format than PRICE_PATTERN expects.
       return {
         ok: false,
-        data: { source: sourceUrl, error: "price pattern not found on page", excerpt: searchText.slice(0, 800) },
+        data: { source: sourceUrl, error: "price pattern not found on page", excerpt: searchText.slice(0, 4000) },
       };
     }
 
