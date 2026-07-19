@@ -159,6 +159,9 @@
   .tip h3{font-size:1rem;margin:8px 0 6px;color:var(--green-800);}
   @media (prefers-color-scheme:dark){.tip h3{color:#a9dcb9;}}
   .tip p{margin:0;font-size:0.88rem;color:var(--muted);}
+  a.tip{display:block;text-decoration:none;color:inherit;transition:border-color .15s,transform .15s;}
+  a.tip:hover{border-color:var(--green-600);transform:translateY(-2px);}
+  a.tip .arrow{float:right;color:var(--muted);font-size:0.85rem;}
   footer{padding:26px 0 40px;color:var(--muted);font-size:0.82rem;border-top:1px solid var(--border);margin-top:20px;}
   footer a{color:var(--muted);text-decoration:underline;}
   .badge-note{display:inline-block;background:var(--green-100);color:var(--green-800);border-radius:999px;padding:3px 10px;font-size:0.75rem;margin-left:6px;}
@@ -173,6 +176,7 @@
     <div class="brand"><span class="emoji">🌳</span> <span>RubberTap Kerala</span></div>
     <nav class="tabs">
       <button type="button" onclick="document.getElementById('advisory').scrollIntoView()" data-i18n="nav.advisory">Advisory</button>
+      <button type="button" onclick="document.getElementById('local').scrollIntoView()" data-i18n="nav.local">Local</button>
       <button type="button" onclick="document.getElementById('prices').scrollIntoView()" data-i18n="nav.prices">Prices</button>
       <button type="button" onclick="document.getElementById('tips').scrollIntoView()" data-i18n="nav.tips">Tips</button>
       <button type="button" class="lang" id="langToggle">മലയാളം</button>
@@ -199,6 +203,31 @@
         <button class="primary" id="checkBtn" type="button" data-i18n="advisory.check">Check conditions</button>
       </div>
       <div id="advisoryResult"></div>
+    </div>
+  </section>
+
+  <section id="local">
+    <h2 data-i18n="local.title">Local info, live</h2>
+    <p class="lead" data-i18n="local.lead">These open a live DuckDuckGo search in a new tab for your selected area — real, current results, no app or API key involved.</p>
+    <div class="tips-grid">
+      <a class="tip" id="linkPrice" target="_blank" rel="noopener">
+        <span class="arrow">↗</span>
+        <div class="icon">💰</div>
+        <h3 data-i18n="local.price.h">Today's rubber price</h3>
+        <p data-i18n="local.price.p">Search the latest RSS4 / sheet rate for your area</p>
+      </a>
+      <a class="tip" id="linkSociety" target="_blank" rel="noopener">
+        <span class="arrow">↗</span>
+        <div class="icon">🏢</div>
+        <h3 data-i18n="local.society.h">Rubber Producer Society</h3>
+        <p data-i18n="local.society.p">Find your nearest society or Rubber Board office</p>
+      </a>
+      <a class="tip" id="linkNews" target="_blank" rel="noopener">
+        <span class="arrow">↗</span>
+        <div class="icon">📰</div>
+        <h3 data-i18n="local.news.h">Kerala rubber market news</h3>
+        <p data-i18n="local.news.p">Latest market news and price trend coverage</p>
+      </a>
     </div>
   </section>
 
@@ -292,12 +321,18 @@
   // ---------- i18n ----------
   var STR = {
     en: {
-      "nav.advisory":"Advisory","nav.prices":"Prices","nav.tips":"Tips",
+      "nav.advisory":"Advisory","nav.local":"Local","nav.prices":"Prices","nav.tips":"Tips",
       "hero.title":"Should you tap today?",
       "hero.subtitle":"A free, no-login tool for Kerala's rubber tappers and estate owners — a quick weather-based tapping call, and a simple place to log daily sheet prices.",
       "advisory.title":"Tapping advisory",
       "advisory.lead":"Pick your area. We check rain over the last day and the early-morning tapping window (4–10 AM) using live weather data.",
       "advisory.district":"Area","advisory.check":"Check conditions",
+      "advisory.temp":"Temperature","advisory.hum":"Humidity","advisory.rain24":"Rain (24h)",
+      "local.title":"Local info, live",
+      "local.lead":"These open a live DuckDuckGo search in a new tab for your selected area — real, current results, no app or API key involved.",
+      "local.price.h":"Today's rubber price","local.price.p":"Search the latest RSS4 / sheet rate for your area",
+      "local.society.h":"Rubber Producer Society","local.society.p":"Find your nearest society or Rubber Board office",
+      "local.news.h":"Kerala rubber market news","local.news.p":"Latest market news and price trend coverage",
       "prices.title":"Price log",
       "prices.lead":"Log your daily RSS4 / sheet rubber price (₹ per kg) to track your own local trend. Saved only in this browser — nothing is sent anywhere.",
       "prices.date":"Date","prices.value":"Price (₹/kg)","prices.add":"Add entry",
@@ -317,12 +352,18 @@
       "footer.credit":"Weather data: Open-Meteo. Built as an independent, free community tool — no account, no tracking."
     },
     ml: {
-      "nav.advisory":"ഉപദേശം","nav.prices":"വില","nav.tips":"നിർദ്ദേശങ്ങൾ",
+      "nav.advisory":"ഉപദേശം","nav.local":"പ്രാദേശികം","nav.prices":"വില","nav.tips":"നിർദ്ദേശങ്ങൾ",
       "hero.title":"ഇന്ന് ടാപ്പിംഗ് നടത്താമോ?",
       "hero.subtitle":"കേരളത്തിലെ റബ്ബർ ടാപ്പർമാർക്കും എസ്റ്റേറ്റ് ഉടമകൾക്കും വേണ്ടിയുള്ള സൗജന്യ ഉപകരണം — കാലാവസ്ഥ അടിസ്ഥാനമാക്കിയുള്ള ടാപ്പിംഗ് നിർദ്ദേശവും ദിവസേനയുള്ള റബ്ബർ വില രേഖപ്പെടുത്താനുള്ള ലളിതമായ സൗകര്യവും.",
       "advisory.title":"ടാപ്പിംഗ് ഉപദേശം",
       "advisory.lead":"നിങ്ങളുടെ പ്രദേശം തിരഞ്ഞെടുക്കുക. കഴിഞ്ഞ 24 മണിക്കൂറിലെ മഴയും പുലർച്ചെ 4–10 മണി വരെയുള്ള ടാപ്പിംഗ് സമയത്തെ കാലാവസ്ഥയും ഞങ്ങൾ പരിശോധിക്കും.",
       "advisory.district":"പ്രദേശം","advisory.check":"കാലാവസ്ഥ പരിശോധിക്കുക",
+      "advisory.temp":"താപനില","advisory.hum":"ആർദ്രത","advisory.rain24":"മഴ (24 മണിക്കൂർ)",
+      "local.title":"പ്രാദേശിക വിവരങ്ങൾ, തത്സമയം",
+      "local.lead":"നിങ്ങളുടെ പ്രദേശത്തിനായി ഒരു തത്സമയ DuckDuckGo തിരയൽ പുതിയ ടാബിൽ തുറക്കുന്നു — യഥാർത്ഥ, നിലവിലെ ഫലങ്ങൾ, ആപ്പോ API-യോ വേണ്ട.",
+      "local.price.h":"ഇന്നത്തെ റബ്ബർ വില","local.price.p":"നിങ്ങളുടെ പ്രദേശത്തെ ഏറ്റവും പുതിയ RSS4 / ഷീറ്റ് നിരക്ക് തിരയുക",
+      "local.society.h":"റബ്ബർ പ്രൊഡ്യൂസേഴ്‌സ് സൊസൈറ്റി","local.society.p":"നിങ്ങളുടെ അടുത്തുള്ള സൊസൈറ്റി അല്ലെങ്കിൽ റബ്ബർ ബോർഡ് ഓഫീസ് കണ്ടെത്തുക",
+      "local.news.h":"കേരള റബ്ബർ മാർക്കറ്റ് വാർത്ത","local.news.p":"ഏറ്റവും പുതിയ വിപണി വാർത്തയും വില പ്രവണതയും",
       "prices.title":"വില രേഖ",
       "prices.lead":"നിങ്ങളുടെ പ്രദേശത്തെ പ്രവണത അറിയാൻ ദിവസേനയുള്ള RSS4 / ഷീറ്റ് റബ്ബർ വില (₹/കിലോ) രേഖപ്പെടുത്തുക. ഈ ബ്രൗസറിൽ മാത്രം സൂക്ഷിക്കുന്നു — എവിടേക്കും അയക്കുന്നില്ല.",
       "prices.date":"തീയതി","prices.value":"വില (₹/കിലോ)","prices.add":"ചേർക്കുക",
@@ -399,6 +440,7 @@
       + "&longitude=" + district.lon
       + "&hourly=precipitation_probability,precipitation,relative_humidity_2m"
       + "&daily=precipitation_sum"
+      + "&current_weather=true"
       + "&past_days=1&forecast_days=2"
       + "&timezone=Asia%2FKolkata";
     var res = await fetch(url);
@@ -439,7 +481,10 @@
     var nowIdx = data.hourly.time.indexOf(fmtDate(now)+"T"+("0"+now.getHours()).slice(-2)+":00");
     if (nowIdx >= 0) nowRaining = (data.hourly.precipitation[nowIdx] || 0) > 0.1;
 
-    return {rainLast24h: rainLast24h, maxProb: maxProb, sumRain: sumRain, avgHum: avgHum, nowRaining: nowRaining};
+    var currentTemp = (data.current_weather && typeof data.current_weather.temperature === "number")
+      ? data.current_weather.temperature : null;
+
+    return {rainLast24h: rainLast24h, maxProb: maxProb, sumRain: sumRain, avgHum: avgHum, nowRaining: nowRaining, currentTemp: currentTemp};
   }
 
   function verdictFrom(a){
@@ -502,13 +547,20 @@
     try{
       var a = await fetchAdvisory(district);
       var v = verdictFrom(a);
+      var dict = STR[lang] || STR.en;
+      var statsHtml =
+        '<div class="stats-grid">' +
+          (a.currentTemp !== null ? '<div class="stat"><div class="val">' + a.currentTemp.toFixed(1) + '°C</div><div class="lbl">' + dict["advisory.temp"] + '</div></div>' : '') +
+          (a.avgHum !== null ? '<div class="stat"><div class="val">' + a.avgHum + '%</div><div class="lbl">' + dict["advisory.hum"] + '</div></div>' : '') +
+          '<div class="stat"><div class="val">' + a.rainLast24h.toFixed(1) + 'mm</div><div class="lbl">' + dict["advisory.rain24"] + '</div></div>' +
+        '</div>';
       resultEl.innerHTML =
         '<div class="verdict ' + v.level + '">' +
           '<div class="icon">' + v.icon + '</div>' +
           '<div><h3>' + v.title + '</h3>' +
           '<ul>' + v.reasons.map(function(r){return "<li>"+r+"</li>";}).join("") + '</ul>' +
           '</div>' +
-        '</div>';
+        '</div>' + statsHtml;
     } catch(e){
       var msg = lang==="ml" ? "കാലാവസ്ഥ വിവരം ലഭ്യമായില്ല. വീണ്ടും ശ്രമിക്കുക." : "Couldn't fetch weather right now. Please try again.";
       resultEl.innerHTML = "<p style='margin-top:16px;color:var(--bad)'>" + msg + "</p>";
@@ -516,6 +568,24 @@
   }
 
   document.getElementById("checkBtn").addEventListener("click", checkAdvisory);
+
+  // ---------- Local links (DuckDuckGo, district-aware) ----------
+  function updateLocalLinks(){
+    var id = districtSelect.value;
+    var district = DISTRICTS.filter(function(d){return d.id===id;})[0];
+    if (!district) return;
+    var priceQ = encodeURIComponent(district.en + " Kerala RSS4 sheet rubber price today");
+    var societyQ = encodeURIComponent("Rubber Producer Society OR Rubber Board office near " + district.en + " Kerala");
+    var newsQ = encodeURIComponent("Kerala rubber price news");
+    document.getElementById("linkPrice").href = "https://duckduckgo.com/?q=" + priceQ;
+    document.getElementById("linkSociety").href = "https://duckduckgo.com/?q=" + societyQ;
+    document.getElementById("linkNews").href = "https://duckduckgo.com/?q=" + newsQ;
+  }
+
+  districtSelect.addEventListener("change", function(){
+    updateLocalLinks();
+    checkAdvisory();
+  });
 
   // ---------- Price log ----------
   var PRICE_KEY = "rubbertap_prices";
@@ -603,6 +673,7 @@
   document.getElementById("priceDate").value = fmtDate(new Date());
   applyLang(localStorage.getItem("rubbertap_lang") || "en");
   renderPrices();
+  updateLocalLinks();
   checkAdvisory();
 })();
 </script>

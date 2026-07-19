@@ -8,7 +8,8 @@ A free, no-login tool for Kerala's rubber tappers and estate owners.
 
 A single self-contained `index.html` — no build step, no dependencies, no server. Two things:
 
-- **Tapping advisory** — pick a Kerala rubber-growing district and get a quick good/caution/don't-tap call for the early-morning tapping window, based on live rain forecast, recent rainfall, and humidity from [Open-Meteo](https://open-meteo.com/) (free, no API key required).
+- **Tapping advisory** — pick a Kerala rubber-growing district and get a quick good/caution/don't-tap call for the early-morning tapping window, based on live rain forecast, recent rainfall, humidity, and current temperature from [Open-Meteo](https://open-meteo.com/) (free, no API key required).
+- **Local info, live** — one-click, district-aware DuckDuckGo search links for today's rubber price, the nearest Rubber Producer Society / Rubber Board office, and Kerala rubber market news. There's no free structured API for any of these, and DuckDuckGo's result pages can't be fetched or embedded client-side (no CORS), so instead of faking "live" data these open a real, current DuckDuckGo search in a new tab, pre-filled for the selected district.
 - **Price log** — log your daily RSS4/sheet rubber price (₹/kg) to track your own local trend. Stored only in your browser's `localStorage` — nothing is sent to a server.
 
 Also includes a set of general good-practice tapping tips, and a full English/Malayalam language toggle.
