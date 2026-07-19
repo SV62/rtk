@@ -6,6 +6,7 @@
 <title>RubberTap Kerala — Tapping Advisory &amp; Price Tracker</title>
 <meta name="description" content="Free daily tapping advisory and rubber price tracker for Kerala rubber tappers and estate owners.">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%8C%B3%3C/text%3E%3C/svg%3E">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
 <style>
   :root{
     --green-900:#1b3a2b;
@@ -227,6 +228,7 @@
         <button class="primary" id="checkBtn" type="button" data-i18n="advisory.check">Check conditions</button>
       </div>
       <p id="currentLocLabel" style="margin:10px 0 0;font-size:0.85rem;color:var(--muted);"></p>
+      <div id="locationMap" style="height:220px;border-radius:10px;margin-top:10px;overflow:hidden;"></div>
       <div id="advisoryResult"></div>
     </div>
 
@@ -430,10 +432,11 @@
 <footer>
   <div class="wrap">
     <p data-i18n="footer.disclaimer">The tapping advisory is a rule-of-thumb estimate from public weather forecasts, not a substitute for on-the-ground judgement or official Rubber Board guidance. Price entries are stored only in your browser's local storage.</p>
-    <p data-i18n="footer.credit">Weather data: Open-Meteo. Radar: Windy.com. Built as an independent, free community tool — no account, no tracking.</p>
+    <p data-i18n="footer.credit">Weather data: Open-Meteo. Radar: Windy.com. Map: OpenStreetMap. Built as an independent, free community tool — no account, no tracking.</p>
   </div>
 </footer>
 
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script>
 (function(){
   "use strict";
@@ -506,7 +509,7 @@
       "tip6.h":"Tap safely",
       "tip6.p1":"Carry a headlamp and wear closed footwear — early-morning tapping means low light.","tip6.p2":"Be mindful of snakes and slippery slopes.",
       "footer.disclaimer":"The tapping advisory is a rule-of-thumb estimate from public weather forecasts, not a substitute for on-the-ground judgement or official Rubber Board guidance. Price entries are stored only in your browser's local storage.",
-      "footer.credit":"Weather data: Open-Meteo. Radar: Windy.com. Built as an independent, free community tool — no account, no tracking."
+      "footer.credit":"Weather data: Open-Meteo. Radar: Windy.com. Map: OpenStreetMap. Built as an independent, free community tool — no account, no tracking."
     },
     ml: {
       "nav.advisory":"ഉപദേശം","nav.local":"പ്രാദേശികം","nav.prices":"വില","nav.tips":"നിർദ്ദേശങ്ങൾ",
@@ -574,7 +577,7 @@
       "tip6.h":"സുരക്ഷിതമായി ടാപ്പ് ചെയ്യുക",
       "tip6.p1":"ഹെഡ്‌ലാമ്പ്, മുഴുവൻ കാൽ മൂടുന്ന ചെരിപ്പ് എന്നിവ ഉപയോഗിക്കുക — പുലർച്ചെ വെളിച്ചം കുറവായിരിക്കും.","tip6.p2":"പാമ്പുകളെയും വഴുക്കലിനെയും ശ്രദ്ധിക്കുക.",
       "footer.disclaimer":"ടാപ്പിംഗ് ഉപദേശം പൊതു കാലാവസ്ഥാ പ്രവചനത്തെ അടിസ്ഥാനമാക്കിയുള്ള ഒരു ഏകദേശ കണക്കാണ് — ഇത് നേരിട്ടുള്ള നിരീക്ഷണത്തിനോ ഔദ്യോഗിക റബ്ബർ ബോർഡ് നിർദ്ദേശത്തിനോ പകരമല്ല. വില വിവരങ്ങൾ നിങ്ങളുടെ ബ്രൗസറിൽ മാത്രമേ സൂക്ഷിക്കുന്നുള്ളൂ.",
-      "footer.credit":"കാലാവസ്ഥാ വിവരം: Open-Meteo. ഇത് ഒരു സ്വതന്ത്ര, സൗജന്യ കമ്മ്യൂണിറ്റി ഉപകരണമാണ് — അക്കൗണ്ട് വേണ്ട, ട്രാക്കിംഗ് ഇല്ല."
+      "footer.credit":"കാലാവസ്ഥാ വിവരം: Open-Meteo. റഡാർ: Windy.com. മാപ്പ്: OpenStreetMap. ഇത് ഒരു സ്വതന്ത്ര, സൗജന്യ കമ്മ്യൂണിറ്റി ഉപകരണമാണ് — അക്കൗണ്ട് വേണ്ട, ട്രാക്കിംഗ് ഇല്ല."
     }
   };
 
@@ -615,7 +618,29 @@
     renderLocationLabel();
     updateLocalLinks();
     updateWindyFrame();
+    updateLocationMap();
     if (!opts || opts.skipCheck !== true) checkAdvisory();
+  }
+
+  // ---------- Location map (Leaflet + OpenStreetMap tiles — free, no API key) ----------
+  var locationMapInstance = null;
+  var locationMapMarker = null;
+
+  function updateLocationMap(){
+    if (!currentLocation || typeof L === "undefined") return;
+    if (!locationMapInstance){
+      locationMapInstance = L.map("locationMap").setView([currentLocation.lat, currentLocation.lon], 11);
+      L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+        maxZoom: 18,
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a> contributors'
+      }).addTo(locationMapInstance);
+      locationMapMarker = L.marker([currentLocation.lat, currentLocation.lon]).addTo(locationMapInstance);
+    } else {
+      locationMapInstance.setView([currentLocation.lat, currentLocation.lon], 11);
+      locationMapMarker.setLatLng([currentLocation.lat, currentLocation.lon]);
+      locationMapInstance.invalidateSize();
+    }
+    locationMapMarker.bindPopup(currentLocation.name);
   }
 
   var savedLocRaw = localStorage.getItem("rubbertap_location");
@@ -1184,6 +1209,7 @@
   renderLocationLabel();
   updateLocalLinks();
   updateWindyFrame();
+  updateLocationMap();
   checkAdvisory();
   fetchLivePrice();
 })();
