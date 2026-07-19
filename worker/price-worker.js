@@ -34,6 +34,18 @@ const CACHE_SECONDS = 6 * 60 * 60; // 6 hours - a daily price doesn't need re-fe
 const KOTTAYAM_PATTERN =
   /RSS[\s-]?4\s+rubber\s+is\s+Rs\.?\s*(\d+(?:\.\d+)?)\s+recorded\s+at\s+the\s+Kottayam\s+market/i;
 
+// The same page separately states a day-over-day change for the same
+// domestic Kottayam RSS4 figure, e.g.:
+//   "The price of rubber RSS4 at the Kottayam market today stood at
+//    28,200.00 per 100 kg, it is RS. 200 (0.71%) increase from the
+//    previous day's price. The previous trading day's price was
+//    28,000.00 per 100 kg."
+// Verified: dividing the "per 100 kg" figures by 100 lines up exactly
+// with KOTTAYAM_PATTERN's already-confirmed ₹/kg price (282), so this is
+// the same real figure in a different sentence, not a separate guess.
+const TREND_PATTERN =
+  /price of rubber RSS[\s-]?4 at the Kottayam market today stood at ([\d,]+\.?\d*)\s*per\s*100\s*kg,?\s*it is RS\.?\s*([\d,]+\.?\d*)\s*\(([\d.]+)%\)\s*(increase|decrease)\s*from the previous day'?s? price\.\s*The previous trading day'?s? price was ([\d,]+\.?\d*)\s*per\s*100\s*kg/i;
+
 export default {
   async fetch(request, env, ctx) {
     const cors = {
@@ -96,6 +108,29 @@ async function tryCommodityMarketLive() {
       };
     }
 
+    // Optional: day-over-day trend. Only trusted if the "per 100kg" figure
+    // it's built from lines up with the price we already verified above -
+    // if the page structure has drifted enough that they disagree, the
+    // trend fields are just omitted rather than risking a wrong signal.
+    let trend = null;
+    const trendMatch = text.match(TREND_PATTERN);
+    if (trendMatch) {
+      const todayPer100 = parseFloat(trendMatch[1].replace(/,/g, ""));
+      const changeAmount = parseFloat(trendMatch[2].replace(/,/g, ""));
+      const changePct = parseFloat(trendMatch[3]);
+      const direction = trendMatch[4].toLowerCase();
+      const prevPer100 = parseFloat(trendMatch[5].replace(/,/g, ""));
+      const todayFromTrend = todayPer100 / 100;
+      if (!isNaN(todayFromTrend) && Math.abs(todayFromTrend - price) < 2) {
+        trend = {
+          previousPrice: Math.round((prevPer100 / 100) * 100) / 100,
+          changeAmount: Math.round((changeAmount / 100) * 100) / 100,
+          changePct: direction === "decrease" ? -changePct : changePct,
+          direction,
+        };
+      }
+    }
+
     return {
       ok: true,
       data: {
@@ -104,6 +139,7 @@ async function tryCommodityMarketLive() {
         unit: "INR/kg",
         method: "commoditymarketlive-verified",
         source: sourceUrl,
+        trend: trend,
         fetchedAt: new Date().toISOString(),
       },
     };
