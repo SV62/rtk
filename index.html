@@ -395,6 +395,7 @@
       "prices.title":"Price log",
       "prices.lead":"Log your daily RSS4 / sheet rubber price (₹ per kg) to track your own local trend. Saved only in this browser — nothing is sent anywhere.",
       "prices.todayLabel":"Today's price","prices.noPriceYet":"No price logged yet — add today's rate below.",
+      "prices.liveBadge":"🟢 Live","prices.liveSource":"Source: ",
       "prices.lastLogged":"Last logged: ","prices.notToday":" (not today — add a fresh entry)",
       "prices.date":"Date","prices.value":"Price (₹/kg)","prices.add":"Add entry",
       "prices.thDate":"Date","prices.thPrice":"₹/kg","prices.thChange":"Change",
@@ -440,6 +441,7 @@
       "prices.title":"വില രേഖ",
       "prices.lead":"നിങ്ങളുടെ പ്രദേശത്തെ പ്രവണത അറിയാൻ ദിവസേനയുള്ള RSS4 / ഷീറ്റ് റബ്ബർ വില (₹/കിലോ) രേഖപ്പെടുത്തുക. ഈ ബ്രൗസറിൽ മാത്രം സൂക്ഷിക്കുന്നു — എവിടേക്കും അയക്കുന്നില്ല.",
       "prices.todayLabel":"ഇന്നത്തെ വില","prices.noPriceYet":"ഇതുവരെ വില രേഖപ്പെടുത്തിയിട്ടില്ല — താഴെ ഇന്നത്തെ നിരക്ക് ചേർക്കുക.",
+      "prices.liveBadge":"🟢 തത്സമയം","prices.liveSource":"ഉറവിടം: ",
       "prices.lastLogged":"അവസാനം രേഖപ്പെടുത്തിയത്: ","prices.notToday":" (ഇന്നത്തേതല്ല — പുതിയ എൻട്രി ചേർക്കുക)",
       "prices.date":"തീയതി","prices.value":"വില (₹/കിലോ)","prices.add":"ചേർക്കുക",
       "prices.thDate":"തീയതി","prices.thPrice":"₹/കിലോ","prices.thChange":"മാറ്റം",
@@ -805,12 +807,39 @@
   }
   function savePrices(list){ localStorage.setItem(PRICE_KEY, JSON.stringify(list)); }
 
+  // ---------- Live price (Kottayam RSS4, via Cloudflare Worker) ----------
+  var LIVE_PRICE_URL = "https://rtk-price.sheril-varughese611.workers.dev/";
+  var livePrice = null; // set once fetchLivePrice() succeeds
+
+  async function fetchLivePrice(){
+    try {
+      var res = await fetch(LIVE_PRICE_URL);
+      if (!res.ok) return;
+      var data = await res.json();
+      if (typeof data.price === "number"){
+        livePrice = data;
+        renderTodayPrice();
+      }
+    } catch(e){
+      // silent — falls back to the self-logged price already on screen
+    }
+  }
+
   function renderTodayPrice(){
-    var list = loadPrices().slice().sort(function(a,b){ return b.date.localeCompare(a.date); });
     var lang = document.body.getAttribute("data-lang");
     var dict = STR[lang] || STR.en;
     var valEl = document.getElementById("todayPriceValue");
     var noteEl = document.getElementById("todayPriceNote");
+
+    if (livePrice){
+      valEl.textContent = "₹" + Number(livePrice.price).toFixed(2) + " /kg";
+      var sourceHost = livePrice.source || "";
+      try { sourceHost = new URL(livePrice.source).hostname.replace(/^www\./, ""); } catch(e){}
+      noteEl.textContent = dict["prices.liveBadge"] + " · " + dict["prices.liveSource"] + sourceHost;
+      return;
+    }
+
+    var list = loadPrices().slice().sort(function(a,b){ return b.date.localeCompare(a.date); });
     if (list.length === 0){
       valEl.textContent = "—";
       noteEl.textContent = dict["prices.noPriceYet"];
@@ -948,6 +977,7 @@
   updateLocalLinks();
   updateWindyFrame();
   checkAdvisory();
+  fetchLivePrice();
 })();
 </script>
 </body>
