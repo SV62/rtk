@@ -626,17 +626,40 @@
     : DEFAULT_LOCATION;
 
   // ---------- Place search (Open-Meteo Geocoding API — free, no key, CORS-enabled) ----------
+  // OpenStreetMap Nominatim — free, no API key/billing, and OSM data has
+  // much better coverage of small Kerala towns (e.g. Kanjirappally) than
+  // Open-Meteo's geocoder, which was missing places like it entirely.
+  // Only called on an explicit Search click / Enter (never per-keystroke),
+  // which keeps this well within Nominatim's usage policy.
   async function searchPlaces(query){
-    var url = "https://geocoding-api.open-meteo.com/v1/search?name=" + encodeURIComponent(query) + "&count=10&language=en&format=json";
-    var res = await fetch(url);
+    var url = "https://nominatim.openstreetmap.org/search"
+      + "?q=" + encodeURIComponent(query + ", Kerala, India")
+      + "&format=jsonv2&addressdetails=1&limit=10&countrycodes=in";
+    var res = await fetch(url, { headers: { "Accept-Language": "en" } });
     if (!res.ok) throw new Error("geocoding request failed");
     var data = await res.json();
-    // Only Kerala matches — never fall back to other Indian states, since a
-    // wrong-state match (e.g. a Delhi result for a small Kerala town) is
-    // worse than an honest "no match found".
-    return (data.results || []).filter(function(r){
-      return r.country_code === "IN" && (r.admin1 || "").toLowerCase().indexOf("kerala") >= 0;
+    // Only Kerala matches — same policy as before: an honest "no match
+    // found" beats showing a wrong-state result.
+    var seen = {};
+    var out = [];
+    data.forEach(function(r){
+      var addr = r.address || {};
+      var state = (addr.state || "").toLowerCase();
+      if (state.indexOf("kerala") < 0) return;
+      var shortName = addr.village || addr.town || addr.city || addr.suburb || addr.hamlet || (r.display_name || "").split(",")[0];
+      var lat = parseFloat(r.lat), lon = parseFloat(r.lon);
+      var key = shortName + "|" + lat.toFixed(2) + "|" + lon.toFixed(2);
+      if (seen[key]) return;
+      seen[key] = true;
+      out.push({
+        name: shortName,
+        admin2: addr.state_district || addr.county || "",
+        admin1: "Kerala",
+        latitude: lat,
+        longitude: lon
+      });
     });
+    return out;
   }
 
   async function runSearch(){
