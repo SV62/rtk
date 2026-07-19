@@ -54,6 +54,35 @@ export default {
       return new Response(null, { headers: cors });
     }
 
+    // TEMP DEBUG: ?debug=1 dumps every "Kottayam" occurrence on
+    // commoditymarketlive.com with surrounding context, to check whether
+    // real domestic price data exists anywhere on that page at all.
+    const url = new URL(request.url);
+    if (url.searchParams.get("debug") === "1") {
+      const res = await fetch("https://www.commoditymarketlive.com/rubber-price", {
+        headers: { "User-Agent": "Mozilla/5.0 (compatible; RubberTapKerala/1.0)" },
+      });
+      const html = await res.text();
+      const text = stripHtml(html);
+      const occurrences = [];
+      const re = /kottayam/gi;
+      let m;
+      while ((m = re.exec(text)) !== null) {
+        occurrences.push(text.slice(Math.max(0, m.index - 100), m.index + 200));
+      }
+      return json(
+        {
+          debug: true,
+          pageLength: text.length,
+          kottayamCount: occurrences.length,
+          occurrences: occurrences.slice(0, 10),
+          firstChars: text.slice(0, 500),
+        },
+        200,
+        cors
+      );
+    }
+
     const cache = caches.default;
     const cacheKey = new Request(request.url, request);
     const cached = await cache.match(cacheKey);
